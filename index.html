@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Game Board</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+        html, body {
+            height: 100%;
+            overflow: hidden; /* ป้องกันการเลื่อน */
+        }
+        body {
+            overscroll-behavior: none; /* ป้องกันการ scroll บนอุปกรณ์ touch */
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 min-h-screen flex flex-col items-center p-6 pt-10">
+    <!-- Navbar ด้านบนสุดของหน้า -->
+    <nav class="w-full flex items-center justify-between px-6 py-3 bg-white shadow mb-6 fixed top-0 left-0 z-50">
+        <!-- โลโก้รูปส้ม (ใช้ emoji) -->
+        <div class="flex items-center gap-2">
+            <span class="text-3xl">🍊</span>
+            <span class="font-bold text-xl text-orange-600">เกมส้ม</span>
+        </div>
+        <!-- เพิ่มเมนูหรือปุ่มอื่น ๆ ได้ที่นี่ -->
+    </nav>
+
+    <!-- ขยับเนื้อหาทั้งหมดลงมาให้ไม่ทับ Navbar -->
+    <div class="pt-16"></div>
+
+    <div class="relative" id="game-wrapper">
+        <svg class="absolute top-0 left-0 w-full h-full pointer-events-none z-0" id="lines"></svg>
+        <div class="grid grid-cols-7 gap-4 relative z-10" id="game-board"></div>
+    </div>
+
+    <!-- วงล้อ -->
+    <div class="relative flex flex-col items-center gap-5 mt-3">
+        <!-- ผลลัพธ์ -->
+        <div id="result" class="text-xl font-bold text-[#333] text-center min-h-[30px]"></div>
+
+        <!-- Wheel (conic-gradient) -->
+        <div class="relative w-[300px] h-[300px]">
+            <!-- Pointer -->
+            <div
+                class="absolute -top-2 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[15px] border-l-transparent border-r-[15px] border-r-transparent border-t-[20px] border-t-[#333] z-10">
+            </div>
+            <div id="wheel" 
+                 class="w-full h-full rounded-full shadow-[0_10px_30px_rgba(0,0,0,0.3)] transition-transform duration-[1500ms] ease-[cubic-bezier(0.25,0.1,0.25,1)] border-4 border-white cursor-pointer"
+                 style="background: conic-gradient(
+                     from 0deg,
+                     #FF5722 0deg 216deg,
+                     #FF9800 216deg 324deg,
+                     #FFC107 324deg 360deg
+                 );">
+                <!-- เพิ่มข้อความบนแต่ละส่วน -->
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <!-- ส่วนที่ 1 -->
+                    <div class="absolute text-white font-bold text-5xl" 
+                         style="transform: rotate(108deg) translateY(-80px) rotate(-108deg);">1</div>
+                    <!-- ส่วนที่ 2 -->
+                    <div class="absolute text-white font-bold text-5xl" 
+                         style="transform: rotate(270deg) translateY(-80px) rotate(-270deg);">2</div>
+                    <!-- ส่วนที่ 3 -->
+                    <div class="absolute text-white font-bold text-5xl" 
+                         style="transform: rotate(342deg) translateY(-80px) rotate(-342deg);">3</div>
+                </div>
+            </div>
+            <!-- Spin Button -->
+            <button id="spinBtn"
+                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 rounded-full bg-[#333] z-10 pointer-events-none">
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        let isSpinning = false;
+        let currentRotation = 0;
+
+        const wheel = document.getElementById('wheel');
+        const spinBtn = document.getElementById('spinBtn');
+        const result = document.getElementById('result');
+
+        function spinWheel() {
+            if (isSpinning) return;
+
+            isSpinning = true;
+            spinBtn.disabled = true;
+            result.textContent = '';
+
+            const randomRotation = Math.floor(Math.random() * 1800) + 1800;
+            currentRotation -= randomRotation;
+
+            wheel.style.transform = `rotate(${currentRotation}deg)`;
+
+            setTimeout(() => {
+                const finalRotation = (currentRotation % 360) * -1;
+                let resultNumber;
+
+                if (finalRotation >= 0 && finalRotation < 216) {
+                    resultNumber = 1;
+                } else if (finalRotation >= 216 && finalRotation < 324) {
+                    resultNumber = 2;
+                } else {
+                    resultNumber = 3;
+                }
+
+                result.textContent = `ผลลัพธ์: ${resultNumber}`;
+                isSpinning = false;
+                spinBtn.disabled = false;
+            }, 1500); // เวลา 1500
+        }
+
+        spinBtn.addEventListener('click', spinWheel);
+        wheel.addEventListener('click', spinWheel);
+    </script>
+
+    <script>
+        const TYPES = ["GOOD", "BAD", "CHANCE", "MONEY +1", "DUEL", "GAMBLE", "blank"];
+
+        const layout = [
+            ["blank",    "BAD",    "CHANCE",   "blank", "BAD",    "blank",  "CHANCE"],
+            ["DUEL",     "blank",  null,       "blank", "blank",  null,     "MONEY +1"],
+            ["blank",    "GOOD",   "blank",    "START", "blank",  "CHANCE", "blank"],
+            ["MONEY +1", "CHANCE", "MONEY +1", "blank", "GAMBLE", null,     "CHANCE"],
+            ["CHANCE",   null,     "blank",    "GOOD",  "blank",  "CHANCE", "MONEY +1"]
+        ];
+
+        const board = document.getElementById("game-board");
+        const lines = document.getElementById("lines");
+
+        const positions = {};
+
+        let cellNumber = 1;
+
+        // สร้าง cell ทั้งหมดก่อน
+        layout.forEach((row, y) => {
+            row.forEach((type, x) => {
+                if (type === null) {
+                    // ช่อง null: เว้นระยะห่าง
+                    const emptyDiv = document.createElement("div");
+                    emptyDiv.className = "w-28 h-20 opacity-0 pointer-events-none";
+                    board.appendChild(emptyDiv);
+                    return;
+                }
+
+                const div = document.createElement("div");
+                div.className = "cell flex items-center justify-center border border-gray-400 rounded-md w-28 h-20 text-xs font-semibold text-center select-none transition hover:bg-gray-100 cursor-pointer relative";
+
+                // เพิ่มสีตามประเภท
+                if (type === "blank") {
+                    div.classList.add("bg-gray-300");
+                } else if (type === "CHANCE") {
+                    div.classList.add("bg-purple-300");
+                } else if (type === "MONEY +1") {
+                    div.classList.add("bg-yellow-200");
+                } else if (type === "BAD") {
+                    div.classList.add("bg-gradient-to-r", "from-red-400", "to-orange-400");
+                } else if (type === "DUEL") {
+                    div.classList.add("bg-gradient-to-r", "from-black", "to-blue-900");
+                } else if (type === "GOOD") {
+                    div.classList.add("bg-gradient-to-r", "from-yellow-300", "to-sky-300");
+                } else if (type === "GAMBLE") {
+                    div.classList.add("bg-gradient-to-r", "from-pink-400", "to-yellow-300");
+                } else {
+                    div.classList.add("bg-white");
+                }
+
+                div.dataset.row = y;
+                div.dataset.col = x;
+
+                // สร้าง span สำหรับข้อความหลัก
+                const typeSpan = document.createElement("span");
+                typeSpan.className = "cell-type";
+                typeSpan.textContent = type === "blank" ? "" : type;
+                // กำหนดสีข้อความสำหรับ DUEL
+                if (type === "DUEL") {
+                    typeSpan.classList.add("text-white");
+                }
+                div.appendChild(typeSpan);
+
+                const id = `${y}-${x}`;
+                positions[id] = { x, y };
+
+                // เฉพาะช่อง START, DUEL, GAMBLE ไม่ต้องแสดงเลข
+                if (type === "START") {
+                    div.classList.add("bg-white", "font-bold");
+                } else {
+                    // เพิ่มเลขช่องที่มุมขวาล่าง
+                    const numSpan = document.createElement("span");
+                    numSpan.textContent = cellNumber;
+                    // ถ้าเป็น DUEL ให้เลขเป็นสีขาว
+                    numSpan.className = `absolute bottom-1 right-2 text-[10px] ${type === "DUEL" ? "text-white" : "text-black"}`;
+                    div.appendChild(numSpan);
+                    cellNumber++;
+                }
+
+                if (type !== "START") {
+                    // คลิกขวาเพื่อเปลี่ยนประเภทช่อง
+                    div.addEventListener("contextmenu", (e) => {
+                        e.preventDefault();
+
+                        // ถ้ามี select เดิมอยู่แล้ว ให้ลบก่อน
+                        const oldSelect = div.querySelector("select.cell-type-select");
+                        if (oldSelect) oldSelect.remove();
+
+                        // สร้าง select
+                        const select = document.createElement("select");
+                        select.className = "cell-type-select absolute bottom-1 left-1 text-xs bg-white border rounded shadow z-20";
+                        TYPES.forEach(optType => {
+                            if (optType === "START") return; // ไม่ให้เลือก START
+                            const option = document.createElement("option");
+                            option.value = optType;
+                            option.textContent = optType === "blank" ? "(blank)" : optType;
+                            if ((typeSpan.textContent === "" && optType === "blank") || typeSpan.textContent === optType) {
+                                option.selected = true;
+                            }
+                            select.appendChild(option);
+                        });
+
+                        // เมื่อเลือกแล้วเปลี่ยนประเภทช่อง
+                        select.addEventListener("change", () => {
+                            const next = select.value;
+                            typeSpan.textContent = next === "blank" ? "" : next;
+
+                            // เปลี่ยนสีข้อความ DUEL
+                            typeSpan.classList.remove("text-white");
+                            if (next === "DUEL") typeSpan.classList.add("text-white");
+
+                            // เปลี่ยนสีพื้นหลัง
+                            div.classList.remove(
+                                "bg-gray-300", "bg-purple-300", "bg-yellow-200", "bg-white",
+                                "bg-gradient-to-br", "bg-gradient-to-r",
+                                "from-red-400", "to-orange-400",
+                                "from-black", "to-blue-900",
+                                "from-yellow-300", "to-sky-300",
+                                "from-pink-400", "to-yellow-300"
+                            );
+                            if (next === "blank") {
+                                div.classList.add("bg-gray-300");
+                            } else if (next === "CHANCE") {
+                                div.classList.add("bg-purple-300");
+                            } else if (next === "MONEY +1") {
+                                div.classList.add("bg-yellow-200");
+                            } else if (next === "BAD") {
+                                div.classList.add("bg-gradient-to-r", "from-red-400", "to-orange-400");
+                            } else if (next === "DUEL") {
+                                div.classList.add("bg-gradient-to-r", "from-black", "to-blue-900");
+                            } else if (next === "GOOD") {
+                                div.classList.add("bg-gradient-to-r", "from-yellow-300", "to-sky-300");
+                            } else if (next === "GAMBLE") {
+                                div.classList.add("bg-gradient-to-r", "from-pink-400", "to-yellow-300");
+                            } else {
+                                div.classList.add("bg-white");
+                            }
+
+                            // เปลี่ยนสีตัวเลข
+                            const numSpan = div.querySelector("span:not(.cell-type)");
+                            numSpan.classList.remove("text-white", "text-black");
+                            if (next === "DUEL") {
+                                numSpan.classList.add("text-white");
+                            } else {
+                                numSpan.classList.add("text-black");
+                            }
+
+                            select.remove();
+                        });
+
+                        // เมื่อ select เสีย focus ให้ลบ
+                        select.addEventListener("blur", () => select.remove());
+
+                        div.appendChild(select);
+                        select.focus();
+                    });
+                }
+
+                board.appendChild(div);
+            });
+        });
+
+        // Define paths between tiles (manually based on visual layout)
+        const paths = [
+            [[0, 0], [0, 6]], [[0, 0], [2, 0]], [[0, 1], [3, 1]], [[1, 0], [1, 1]], [[2, 0], [2, 6]],
+            [[3, 0], [4, 0]], [[3, 0], [3, 4]], [[3, 2], [4, 2]], [[4, 2], [4, 6]], [[0, 3], [4, 3]], 
+            [[0, 4], [4, 4]], [[0, 6], [4, 6]]
+        ];
+
+        function drawLine(x1, y1, x2, y2) {
+            // หา cell ต้นทางและปลายทาง
+            const fromCell = document.querySelector(`.cell[data-row="${y1}"][data-col="${x1}"]`);
+            const toCell = document.querySelector(`.cell[data-row="${y2}"][data-col="${x2}"]`);
+            if (!fromCell || !toCell) return;
+
+            // หา offset ของ game-board
+            const boardRect = board.getBoundingClientRect();
+
+            // กึ่งกลาง cell ต้นทาง
+            const fromRect = fromCell.getBoundingClientRect();
+            const p1x = fromRect.left - boardRect.left + fromRect.width / 2;
+            const p1y = fromRect.top - boardRect.top + fromRect.height / 2;
+
+            // กึ่งกลาง cell ปลายทาง
+            const toRect = toCell.getBoundingClientRect();
+            const p2x = toRect.left - boardRect.left + toRect.width / 2;
+            const p2y = toRect.top - boardRect.top + toRect.height / 2;
+
+            const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            line.setAttribute("x1", p1x);
+            line.setAttribute("y1", p1y);
+            line.setAttribute("x2", p2x);
+            line.setAttribute("y2", p2y);
+            line.setAttribute("stroke", "#888");
+            line.setAttribute("stroke-width", "3");
+            line.setAttribute("stroke-linecap", "round");
+            lines.appendChild(line);
+        }
+
+        // วาดเส้นหลัง DOM render แล้ว
+        setTimeout(() => {
+            paths.forEach(([from, to]) => drawLine(from[1], from[0], to[1], to[0]));
+        }, 0);
+    </script>
+</body>
+
+</html>
