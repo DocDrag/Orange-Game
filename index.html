@@ -48,11 +48,11 @@
     <div id="game-board-space">
         <!-- ขยับเนื้อหาทั้งหมดลงมาให้ไม่ทับ Navbar -->
         <div class="pt-16"></div>
-    
+
         <svg id="special-lines" class="absolute top-0 left-0 w-full h-full pointer-events-none z-0"
             style="overflow: visible;"></svg>
-    
-    
+
+
         <!-- Game Board + ปุ่มเพิ่มผู้เล่นด้านขวา -->
         <div class="relative flex flex-row items-start justify-center w-full">
             <!-- ดันพื้นที่ให้ Game Board ยังคงอยู่ตรงกลาง -->
@@ -68,12 +68,12 @@
                 <!-- ปุ่มจะถูกสร้างด้วย JS เพื่อให้ขนาดสัมพันธ์กับ Game Board -->
             </div>
         </div>
-    
+
         <!-- วงล้อ -->
         <div class="relative flex flex-col items-center gap-5 mt-3">
             <!-- ผลลัพธ์ -->
             <div id="result" class="text-xl font-bold text-[#333] text-center min-h-[30px]"></div>
-    
+
             <!-- Wheel (conic-gradient) -->
             <div class="relative w-[300px] h-[300px]">
                 <!-- Pointer -->
@@ -414,15 +414,25 @@
             const urlWrapper = document.getElementById('url-input-wrapper');
             const textWrapper = document.getElementById('text-input-wrapper');
             const iconTypeRadios = document.querySelectorAll('input[name="icon-type"]');
+            const uploadInputWrapper = document.getElementById('upload-input-wrapper');
+
+            function hideModeInModalAll() {
+                // เปลี่ยนใน Modal เป็น URL Mode
+                urlWrapper.classList.add('hidden');
+                textWrapper.classList.add('hidden');
+                uploadInputWrapper.classList.add('hidden');
+            }
 
             iconTypeRadios.forEach(radio => {
                 radio.addEventListener('change', () => {
+                    hideModeInModalAll();
+
                     if (radio.value === 'url') {
                         urlWrapper.classList.remove('hidden');
-                        textWrapper.classList.add('hidden');
-                    } else {
-                        urlWrapper.classList.add('hidden');
+                    } else if (radio.value === 'text') {
                         textWrapper.classList.remove('hidden');
+                    } else if (radio.value === 'upload') {
+                        uploadInputWrapper.classList.remove('hidden');
                     }
                 });
             });
@@ -495,32 +505,42 @@
                 closeModal.addEventListener('click', () => {
                     modalBg.classList.add('hidden');
                     // เปลี่ยนใน Modal เป็น URL Mode
+                    hideModeInModalAll();
                     urlWrapper.classList.remove('hidden');
-                    textWrapper.classList.add('hidden');
                 });
                 modalBg.addEventListener('click', (e) => {
                     if (e.target === modalBg) modalBg.classList.add('hidden');
                 });
 
                 // เมื่อ submit ฟอร์ม
-                playerForm.addEventListener('submit', (e) => {
+                const playerUploadInput = document.getElementById('player-upload');
+                playerForm.addEventListener('submit', async (e) => {
                     e.preventDefault();
                     if (!currentBtn) return;
                     const borderColor = playerBorderInput.value;
 
                     let imgUrl = "";
                     const iconType = document.querySelector('input[name="icon-type"]:checked').value;
+
                     if (iconType === "url") {
                         imgUrl = playerImgInput.value;
-                    } else {
+                    } else if (iconType === "text") {
                         const emoji = document.getElementById("player-text").value.trim();
                         if (!emoji) return alert("กรุณาใส่อิโมจิหรือข้อความ");
-                        imgUrl = generateImageFromText(emoji); // 🔁 แปลงเป็น DataURL
+                        imgUrl = generateImageFromText(emoji);
+                    } else if (iconType === "upload") {
+                        const file = playerUploadInput.files[0];
+                        if (!file) return alert("กรุณาเลือกรูปภาพก่อนนะคะ");
+                        imgUrl = await new Promise(resolve => {
+                            const reader = new FileReader();
+                            reader.onload = (ev) => resolve(ev.target.result);
+                            reader.readAsDataURL(file);
+                        });
                     }
 
                     // เปลี่ยนใน Modal เป็น URL Mode
+                    hideModeInModalAll();
                     urlWrapper.classList.remove('hidden');
-                    textWrapper.classList.add('hidden');
 
                     // สร้างรูปผู้เล่นแทนปุ่ม
                     const img = document.createElement('img');
@@ -668,7 +688,7 @@
 
     <!-- Modal สำหรับเพิ่มผู้เล่น -->
     <div id="player-modal-bg" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
-        <div class="bg-white rounded-lg shadow-lg p-6 w-80 relative">
+        <div class="bg-white rounded-lg shadow-lg p-6 w-120 relative">
             <button id="close-modal"
                 class="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
             <h2 class="text-lg font-bold mb-4 text-orange-600">เพิ่มผู้เล่น</h2>
@@ -684,6 +704,10 @@
                             <input type="radio" name="icon-type" value="text">
                             อิโมจิ / ข้อความ
                         </label>
+                        <label class="flex items-center gap-1">
+                            <input type="radio" name="icon-type" value="upload">
+                            อัปโหลดไฟล์
+                        </label>
                     </div>
                 </div>
 
@@ -697,6 +721,12 @@
                     <input type="text" id="player-text" maxlength="3" class="w-full border rounded px-2 py-1"
                         placeholder="🍉 หรือ A">
                 </div>
+
+                <div id="upload-input-wrapper" class="hidden">
+                    <label class="block text-sm font-medium mb-1 mt-2">เลือกรูปจากเครื่อง</label>
+                    <input type="file" id="player-upload" accept="image/*" class="w-full border rounded px-2 py-1">
+                </div>
+
                 <div>
                     <label class="block text-sm font-medium mb-1">เลือกสีขอบรูป</label>
                     <input type="color" id="player-border" value="#f97316">
