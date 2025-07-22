@@ -476,8 +476,8 @@
                     if (startCell) {
                         const token = document.createElement('div');
                         token.className = "absolute rounded-full border-4 cursor-grab active:cursor-grabbing";
-                        token.style.width = "32px";
-                        token.style.height = "32px";
+                        token.style.width = "48px";
+                        token.style.height = "48px";
                         token.style.backgroundImage = `url(${imgUrl})`;
                         token.style.backgroundSize = "cover";
                         token.style.borderColor = borderColor;
@@ -500,24 +500,31 @@
                             token.classList.remove("opacity-50");
                         });
 
-                        // จับเมาส์วาง
+                        // ✅ เพิ่มหมากเข้า board
                         board.appendChild(token);
-
-                        board.addEventListener('dragover', (e) => e.preventDefault());
-                        board.addEventListener('drop', (e) => {
-                            const droppedToken = [...board.querySelectorAll('.absolute')].find(el => el.dataset.index === token.dataset.index);
-                            if (droppedToken) {
-                                const offsetX = 16; // ครึ่งหนึ่งของขนาดหมาก
-                                const offsetY = 16;
-                                const boardBox = board.getBoundingClientRect();
-                                droppedToken.style.left = `${e.clientX - boardBox.left - offsetX}px`;
-                                droppedToken.style.top = `${e.clientY - boardBox.top - offsetY}px`;
-                            }
-                        });
                     }
                 });
             }, 0);
         });
+
+        // ให้วางไว้แค่ครั้งเดียวเท่านั้น
+        board.addEventListener('dragover', (e) => {
+            e.preventDefault();
+        });
+
+        board.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const index = e.dataTransfer.getData('text/plain');
+            const droppedToken = board.querySelector(`.absolute[data-index="${index}"]`);
+            if (droppedToken) {
+                const offsetX = 24; // ครึ่งหนึ่งของขนาดหมาก
+                const offsetY = 24;
+                const boardBox = board.getBoundingClientRect();
+                droppedToken.style.left = `${e.clientX - boardBox.left - offsetX}px`;
+                droppedToken.style.top = `${e.clientY - boardBox.top - offsetY}px`;
+            }
+        });
+
     </script>
 
     <!-- Modal สำหรับเพิ่มผู้เล่น -->
