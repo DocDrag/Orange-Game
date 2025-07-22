@@ -10,6 +10,7 @@
 </head>
 
 <body class="bg-gray-100 min-h-screen flex flex-col items-center p-6 pt-10">
+
     <!-- Navbar ด้านบนสุดของหน้า -->
     <nav class="w-full flex items-center justify-between px-6 py-3 bg-white shadow mb-6 fixed top-0 left-0 z-50">
         <!-- โลโก้รูปส้ม (ใช้ emoji) -->
@@ -22,6 +23,10 @@
 
     <!-- ขยับเนื้อหาทั้งหมดลงมาให้ไม่ทับ Navbar -->
     <div class="pt-16"></div>
+
+    <svg id="special-lines" class="absolute top-0 left-0 w-full h-full pointer-events-none z-0"
+        style="overflow: visible;"></svg>
+
 
     <!-- Game Board + ปุ่มเพิ่มผู้เล่นด้านขวา -->
     <div class="relative flex flex-row items-start justify-center w-full">
@@ -93,7 +98,7 @@
             spinBtn.disabled = true;
             result.textContent = '';
 
-            const randomRotation = Math.floor(Math.random() * 1800) + 1800;
+            const randomRotation = Math.floor(Math.random() * 1800) + 700; // หมุนระหว่าง 700 ถึง 2500 องศา
             currentRotation -= randomRotation;
 
             wheel.style.transform = `rotate(${currentRotation}deg)`;
@@ -290,6 +295,49 @@
             [[0, 4], [4, 4]], [[0, 6], [4, 6]]
         ];
 
+        function drawSpecialLine(x, y, directionX, directionY, color, side) {
+            const fromCell = document.querySelector(`.cell[data-row="${x}"][data-col="${y}"]`);
+            if (!fromCell) return;
+
+            const fromRect = fromCell.getBoundingClientRect();
+
+            let p1x, p1y;
+
+            if (side === "left") {
+                p1x = fromRect.left;
+                p1y = fromRect.top + fromRect.height / 2;
+            } else if (side === "right") {
+                p1x = fromRect.right;
+                p1y = fromRect.top + fromRect.height / 2;
+            } else if (side === "top") {
+                p1x = fromRect.left + fromRect.width / 2;
+                p1y = fromRect.top;
+            } else if (side === "bottom") {
+                p1x = fromRect.left + fromRect.width / 2;
+                p1y = fromRect.bottom;
+            }
+
+            const p2x = p1x + directionX;
+            const p2y = p1y + directionY;
+
+            const overlaySvg = document.getElementById('special-lines');
+            if (!overlaySvg) return;
+
+            const specialLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            specialLine.setAttribute("x1", p1x);
+            specialLine.setAttribute("y1", p1y);
+            specialLine.setAttribute("x2", p2x);
+            specialLine.setAttribute("y2", p2y);
+            specialLine.setAttribute("stroke", color);
+            specialLine.setAttribute("stroke-width", "4");
+            specialLine.setAttribute("stroke-linecap", "round");
+
+            // ✅ เพิ่มเส้นประ
+            specialLine.setAttribute("stroke-dasharray", "8, 10");
+
+            overlaySvg.appendChild(specialLine);
+        }
+
         function drawLine(x1, y1, x2, y2) {
             // หา cell ต้นทางและปลายทาง
             const fromCell = document.querySelector(`.cell[data-row="${y1}"][data-col="${x1}"]`);
@@ -323,6 +371,12 @@
         // วาดเส้นหลัง DOM render แล้ว
         setTimeout(() => {
             paths.forEach(([from, to]) => drawLine(from[1], from[0], to[1], to[0]));
+            drawSpecialLine(0, 0, -10000, 0, "red", "left"); // เส้นพิเศษ
+            drawSpecialLine(1, 6, 10000, 0, "red", "right"); 
+            drawSpecialLine(0, 1, 0, -10000, "orange", "top"); 
+            drawSpecialLine(4, 5, 0, 10000, "orange", "bottom"); 
+            drawSpecialLine(0, 4, 0, -10000, "#ADD8E6", "top"); 
+            drawSpecialLine(4, 0, 0, 10000, "#ADD8E6", "bottom"); 
         }, 0);
 
         // หลังจากสร้าง Game Board แล้ว ให้เพิ่มปุ่มเพิ่มผู้เล่น
