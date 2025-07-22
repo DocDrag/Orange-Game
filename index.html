@@ -334,39 +334,37 @@
             const gameBoard = document.getElementById('game-board');
             const addPlayerDiv = document.getElementById('add-player-buttons');
 
-            // รอให้ Game Board render เสร็จ
             setTimeout(() => {
                 const boardRect = gameBoard.getBoundingClientRect();
                 const boardHeight = boardRect.height;
 
-                // สร้างปุ่ม 4 ปุ่ม ขนาดเท่ากัน เรียงในแนวตั้ง
                 const btnCount = 4;
-                const btnGap = 16; // px (gap-4)
+                const btnGap = 16;
                 const btnSize = (boardHeight - btnGap * (btnCount - 1)) / btnCount;
 
                 addPlayerDiv.style.height = boardHeight + "px";
-                addPlayerDiv.innerHTML = ""; // ล้างก่อน
+                addPlayerDiv.innerHTML = "";
 
                 for (let i = 0; i < btnCount; i++) {
                     const btn = document.createElement("button");
                     btn.type = "button";
-                    btn.className = `flex items-center justify-center rounded-full bg-orange-400 hover:bg-orange-500 shadow w-[${btnSize}px] h-[${btnSize}px] text-white text-3xl transition-all`;
+                    btn.className = `add-player-btn flex items-center justify-center rounded-full bg-orange-400 hover:bg-orange-500 shadow w-[${btnSize}px] h-[${btnSize}px] text-white text-3xl transition-all`;
                     btn.style.width = btn.style.height = btnSize + "px";
                     btn.innerHTML = '<span class="pointer-events-none select-none">+</span>';
                     btn.title = "เพิ่มผู้เล่น";
+                    btn.dataset.index = i;
                     addPlayerDiv.appendChild(btn);
                     if (i < btnCount - 1) {
-                        // เพิ่ม gap
                         const gap = document.createElement("div");
                         gap.style.height = btnGap + "px";
                         addPlayerDiv.appendChild(gap);
                     }
                 }
 
+                // Dummy left space
                 const leftSpace = document.getElementById('left-space');
                 leftSpace.style.height = boardHeight + "px";
-                leftSpace.innerHTML = ""; // ล้างก่อน
-
+                leftSpace.innerHTML = "";
                 for (let i = 0; i < btnCount; i++) {
                     const dummy = document.createElement("div");
                     dummy.className = `rounded-full w-[${btnSize}px] h-[${btnSize}px] opacity-0`;
@@ -378,9 +376,120 @@
                         leftSpace.appendChild(gap);
                     }
                 }
+
+                // Modal logic
+                const modalBg = document.getElementById('player-modal-bg');
+                const closeModal = document.getElementById('close-modal');
+                const playerForm = document.getElementById('player-form');
+                const playerImgInput = document.getElementById('player-img');
+                const playerBorderInput = document.getElementById('player-border');
+                let currentBtn = null;
+
+                // เปิด modal เมื่อกดปุ่มเพิ่มผู้เล่น
+                function bindAddPlayerBtnEvents() {
+                    document.querySelectorAll('.add-player-btn').forEach(btn => {
+                        btn.addEventListener('click', () => {
+                            currentBtn = btn;
+                            playerForm.reset();
+                            playerBorderInput.value = "#f97316";
+                            modalBg.classList.remove('hidden');
+                        });
+                    });
+                }
+                bindAddPlayerBtnEvents();
+
+                // ปิด modal
+                closeModal.addEventListener('click', () => {
+                    modalBg.classList.add('hidden');
+                });
+                modalBg.addEventListener('click', (e) => {
+                    if (e.target === modalBg) modalBg.classList.add('hidden');
+                });
+
+                // เมื่อ submit ฟอร์ม
+                playerForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    if (!currentBtn) return;
+                    const imgUrl = playerImgInput.value;
+                    const borderColor = playerBorderInput.value;
+
+                    // สร้างรูปผู้เล่นแทนปุ่ม
+                    const img = document.createElement('img');
+                    img.src = imgUrl;
+                    img.alt = "Player";
+                    img.className = "player-img rounded-full object-cover cursor-pointer";
+                    img.style.width = img.style.height = currentBtn.style.width;
+                    img.style.border = `4px solid ${borderColor}`;
+                    img.style.background = "#fff";
+                    img.style.boxShadow = "0 2px 8px rgba(0,0,0,0.15)";
+                    img.dataset.index = currentBtn.dataset.index;
+
+                    // เพิ่ม contextmenu สำหรับลบ
+                    img.addEventListener('contextmenu', function(e) {
+                        e.preventDefault();
+                        // ลบเมนูเดิมถ้ามี
+                        document.querySelectorAll('.player-context-menu').forEach(m => m.remove());
+
+                        // สร้างเมนู
+                        const menu = document.createElement('div');
+                        menu.className = "player-context-menu absolute bg-white border rounded shadow px-3 py-2 text-sm z-50";
+                        menu.style.top = e.clientY + "px";
+                        menu.style.left = e.clientX + "px";
+                        menu.innerHTML = `<button class="text-red-600 hover:underline" type="button">ลบผู้เล่น</button>`;
+
+                        // ลบผู้เล่นเมื่อกด
+                        menu.querySelector('button').addEventListener('click', () => {
+                            // สร้างปุ่มใหม่แทน img
+                            const newBtn = document.createElement("button");
+                            newBtn.type = "button";
+                            newBtn.className = `add-player-btn flex items-center justify-center rounded-full bg-orange-400 hover:bg-orange-500 shadow w-[${img.style.width}] h-[${img.style.height}] text-white text-3xl transition-all`;
+                            newBtn.style.width = newBtn.style.height = img.style.width;
+                            newBtn.innerHTML = '<span class="pointer-events-none select-none">+</span>';
+                            newBtn.title = "เพิ่มผู้เล่น";
+                            newBtn.dataset.index = img.dataset.index;
+                            img.replaceWith(newBtn);
+                            bindAddPlayerBtnEvents();
+                            menu.remove();
+                        });
+
+                        // ลบเมนูเมื่อคลิกที่อื่น
+                        document.body.addEventListener('click', function removeMenu(ev) {
+                            if (!menu.contains(ev.target)) {
+                                menu.remove();
+                                document.body.removeEventListener('click', removeMenu);
+                            }
+                        });
+
+                        document.body.appendChild(menu);
+                    });
+
+                    currentBtn.replaceWith(img);
+
+                    modalBg.classList.add('hidden');
+                    currentBtn = null;
+                });
             }, 0);
         });
     </script>
+
+    <!-- Modal สำหรับเพิ่มผู้เล่น -->
+    <div id="player-modal-bg" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-lg p-6 w-80 relative">
+            <button id="close-modal" class="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+            <h2 class="text-lg font-bold mb-4 text-orange-600">เพิ่มผู้เล่น</h2>
+            <form id="player-form" class="flex flex-col gap-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1">ลิงก์รูปภาพผู้เล่น</label>
+                    <input type="url" id="player-img" class="w-full border rounded px-2 py-1" placeholder="https://..." required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">เลือกสีขอบรูป</label>
+                    <input type="color" id="player-border" class="w-10 h-10 p-0 border-2 rounded-full" value="#f97316">
+                </div>
+                <button type="submit" class="bg-orange-500 hover:bg-orange-600 text-white rounded px-4 py-2 font-bold">ยืนยัน</button>
+            </form>
+        </div>
+    </div>
 </body>
 
 </html>
