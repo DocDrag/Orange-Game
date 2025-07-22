@@ -18,7 +18,12 @@
             <span class="text-3xl">🍊</span>
             <span class="font-bold text-xl text-orange-600">เกมส้ม</span>
         </div>
-        <!-- เพิ่มเมนูหรือปุ่มอื่น ๆ ได้ที่นี่ -->
+        <!-- เมนูหรือปุ่มอื่น ๆ -->
+        <a href="https://www.youtube.com/live/TTaur_JfrCs?si=K-lf_ghMbp22_hwj" target="_blank"
+            class="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-4 py-2 rounded shadow transition">
+            How To Play
+        </a>
+
     </nav>
 
     <!-- ขยับเนื้อหาทั้งหมดลงมาให้ไม่ทับ Navbar -->
@@ -372,17 +377,34 @@
         setTimeout(() => {
             paths.forEach(([from, to]) => drawLine(from[1], from[0], to[1], to[0]));
             drawSpecialLine(0, 0, -10000, 0, "red", "left"); // เส้นพิเศษ
-            drawSpecialLine(1, 6, 10000, 0, "red", "right"); 
-            drawSpecialLine(0, 1, 0, -10000, "orange", "top"); 
-            drawSpecialLine(4, 5, 0, 10000, "orange", "bottom"); 
-            drawSpecialLine(0, 4, 0, -10000, "#ADD8E6", "top"); 
-            drawSpecialLine(4, 0, 0, 10000, "#ADD8E6", "bottom"); 
+            drawSpecialLine(1, 6, 10000, 0, "red", "right");
+            drawSpecialLine(0, 1, 0, -10000, "orange", "top");
+            drawSpecialLine(4, 5, 0, 10000, "orange", "bottom");
+            drawSpecialLine(0, 4, 0, -10000, "#ADD8E6", "top");
+            drawSpecialLine(4, 0, 0, 10000, "#ADD8E6", "bottom");
         }, 0);
 
         // หลังจากสร้าง Game Board แล้ว ให้เพิ่มปุ่มเพิ่มผู้เล่น
         window.addEventListener('DOMContentLoaded', () => {
             const gameBoard = document.getElementById('game-board');
             const addPlayerDiv = document.getElementById('add-player-buttons');
+
+            // 🎯 สลับ input
+            const urlWrapper = document.getElementById('url-input-wrapper');
+            const textWrapper = document.getElementById('text-input-wrapper');
+            const iconTypeRadios = document.querySelectorAll('input[name="icon-type"]');
+
+            iconTypeRadios.forEach(radio => {
+                radio.addEventListener('change', () => {
+                    if (radio.value === 'url') {
+                        urlWrapper.classList.remove('hidden');
+                        textWrapper.classList.add('hidden');
+                    } else {
+                        urlWrapper.classList.add('hidden');
+                        textWrapper.classList.remove('hidden');
+                    }
+                });
+            });
 
             setTimeout(() => {
                 const boardRect = gameBoard.getBoundingClientRect();
@@ -451,6 +473,9 @@
                 // ปิด modal
                 closeModal.addEventListener('click', () => {
                     modalBg.classList.add('hidden');
+                    // เปลี่ยนใน Modal เป็น URL Mode
+                    urlWrapper.classList.remove('hidden');
+                    textWrapper.classList.add('hidden');
                 });
                 modalBg.addEventListener('click', (e) => {
                     if (e.target === modalBg) modalBg.classList.add('hidden');
@@ -460,8 +485,21 @@
                 playerForm.addEventListener('submit', (e) => {
                     e.preventDefault();
                     if (!currentBtn) return;
-                    const imgUrl = playerImgInput.value;
                     const borderColor = playerBorderInput.value;
+
+                    let imgUrl = "";
+                    const iconType = document.querySelector('input[name="icon-type"]:checked').value;
+                    if (iconType === "url") {
+                        imgUrl = playerImgInput.value;
+                    } else {
+                        const emoji = document.getElementById("player-text").value.trim();
+                        if (!emoji) return alert("กรุณาใส่อิโมจิหรือข้อความ");
+                        imgUrl = generateImageFromText(emoji); // 🔁 แปลงเป็น DataURL
+                    }
+
+                    // เปลี่ยนใน Modal เป็น URL Mode
+                    urlWrapper.classList.remove('hidden');
+                    textWrapper.classList.add('hidden');
 
                     // สร้างรูปผู้เล่นแทนปุ่ม
                     const img = document.createElement('img');
@@ -581,6 +619,23 @@
 
     </script>
 
+    <script>
+        function generateImageFromText(text, color = "#000", fontSize = 48) {
+            const canvas = document.createElement("canvas");
+            const ctx = canvas.getContext("2d");
+            canvas.width = 128;
+            canvas.height = 128;
+            ctx.fillStyle = "#fff";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.font = `${fontSize}px sans-serif`;
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillStyle = color;
+            ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+            return canvas.toDataURL("image/png");
+        }
+    </script>
+
     <!-- Modal สำหรับเพิ่มผู้เล่น -->
     <div id="player-modal-bg" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
         <div class="bg-white rounded-lg shadow-lg p-6 w-80 relative">
@@ -589,9 +644,28 @@
             <h2 class="text-lg font-bold mb-4 text-orange-600">เพิ่มผู้เล่น</h2>
             <form id="player-form" class="flex flex-col gap-4">
                 <div>
-                    <label class="block text-sm font-medium mb-1">ลิงก์รูปภาพผู้เล่น</label>
-                    <input type="url" id="player-img" class="w-full border rounded px-2 py-1" placeholder="https://..."
-                        required>
+                    <label class="block text-sm font-medium mb-1">เลือกประเภทไอคอน</label>
+                    <div class="flex gap-3">
+                        <label class="flex items-center gap-1">
+                            <input type="radio" name="icon-type" value="url" checked>
+                            URL รูปภาพ
+                        </label>
+                        <label class="flex items-center gap-1">
+                            <input type="radio" name="icon-type" value="text">
+                            อิโมจิ / ข้อความ
+                        </label>
+                    </div>
+                </div>
+
+                <div id="url-input-wrapper">
+                    <label class="block text-sm font-medium mb-1 mt-2">ลิงก์รูปภาพผู้เล่น</label>
+                    <input type="url" id="player-img" class="w-full border rounded px-2 py-1" placeholder="https://...">
+                </div>
+
+                <div id="text-input-wrapper" class="hidden">
+                    <label class="block text-sm font-medium mb-1 mt-2">อิโมจิ หรือ ข้อความ</label>
+                    <input type="text" id="player-text" maxlength="3" class="w-full border rounded px-2 py-1"
+                        placeholder="🍉 หรือ A">
                 </div>
                 <div>
                     <label class="block text-sm font-medium mb-1">เลือกสีขอบรูป</label>
@@ -602,6 +676,7 @@
             </form>
         </div>
     </div>
+
 </body>
 
 </html>
