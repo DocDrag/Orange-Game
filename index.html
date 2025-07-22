@@ -7,15 +7,6 @@
     <title>Game Board</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="style.css" />
-    <style>
-        html, body {
-            height: 100%;
-            overflow: hidden; /* ป้องกันการเลื่อน */
-        }
-        body {
-            overscroll-behavior: none; /* ป้องกันการ scroll บนอุปกรณ์ touch */
-        }
-    </style>
 </head>
 
 <body class="bg-gray-100 min-h-screen flex flex-col items-center p-6 pt-10">
@@ -32,9 +23,24 @@
     <!-- ขยับเนื้อหาทั้งหมดลงมาให้ไม่ทับ Navbar -->
     <div class="pt-16"></div>
 
-    <div class="relative" id="game-wrapper">
-        <svg class="absolute top-0 left-0 w-full h-full pointer-events-none z-0" id="lines"></svg>
-        <div class="grid grid-cols-7 gap-4 relative z-10" id="game-board"></div>
+    <!-- Game Board + ปุ่มเพิ่มผู้เล่นด้านขวา -->
+    <div class="relative flex flex-row items-start justify-center w-full">
+        <!-- ดันพื้นที่ให้ Game Board ยังคงอยู่ตรงกลาง -->
+        <div id="left-space"
+            class="flex flex-col justify-between items-center mr-16"
+            style="height: 100%;">
+        </div>
+        <!-- Game Board -->
+        <div class="relative" id="game-wrapper">
+            <svg class="absolute top-0 left-0 w-full h-full pointer-events-none z-0" id="lines"></svg>
+            <div class="grid grid-cols-7 gap-4 relative z-10" id="game-board"></div>
+        </div>
+        <!-- ปุ่มเพิ่มผู้เล่น 4 ปุ่ม -->
+        <div id="add-player-buttons"
+            class="flex flex-col justify-between items-center ml-16"
+            style="height: 100%;">
+            <!-- ปุ่มจะถูกสร้างด้วย JS เพื่อให้ขนาดสัมพันธ์กับ Game Board -->
+        </div>
     </div>
 
     <!-- วงล้อ -->
@@ -322,6 +328,58 @@
         setTimeout(() => {
             paths.forEach(([from, to]) => drawLine(from[1], from[0], to[1], to[0]));
         }, 0);
+
+        // หลังจากสร้าง Game Board แล้ว ให้เพิ่มปุ่มเพิ่มผู้เล่น
+        window.addEventListener('DOMContentLoaded', () => {
+            const gameBoard = document.getElementById('game-board');
+            const addPlayerDiv = document.getElementById('add-player-buttons');
+
+            // รอให้ Game Board render เสร็จ
+            setTimeout(() => {
+                const boardRect = gameBoard.getBoundingClientRect();
+                const boardHeight = boardRect.height;
+
+                // สร้างปุ่ม 4 ปุ่ม ขนาดเท่ากัน เรียงในแนวตั้ง
+                const btnCount = 4;
+                const btnGap = 16; // px (gap-4)
+                const btnSize = (boardHeight - btnGap * (btnCount - 1)) / btnCount;
+
+                addPlayerDiv.style.height = boardHeight + "px";
+                addPlayerDiv.innerHTML = ""; // ล้างก่อน
+
+                for (let i = 0; i < btnCount; i++) {
+                    const btn = document.createElement("button");
+                    btn.type = "button";
+                    btn.className = `flex items-center justify-center rounded-full bg-orange-400 hover:bg-orange-500 shadow w-[${btnSize}px] h-[${btnSize}px] text-white text-3xl transition-all`;
+                    btn.style.width = btn.style.height = btnSize + "px";
+                    btn.innerHTML = '<span class="pointer-events-none select-none">+</span>';
+                    btn.title = "เพิ่มผู้เล่น";
+                    addPlayerDiv.appendChild(btn);
+                    if (i < btnCount - 1) {
+                        // เพิ่ม gap
+                        const gap = document.createElement("div");
+                        gap.style.height = btnGap + "px";
+                        addPlayerDiv.appendChild(gap);
+                    }
+                }
+
+                const leftSpace = document.getElementById('left-space');
+                leftSpace.style.height = boardHeight + "px";
+                leftSpace.innerHTML = ""; // ล้างก่อน
+
+                for (let i = 0; i < btnCount; i++) {
+                    const dummy = document.createElement("div");
+                    dummy.className = `rounded-full w-[${btnSize}px] h-[${btnSize}px] opacity-0`;
+                    dummy.style.width = dummy.style.height = btnSize + "px";
+                    leftSpace.appendChild(dummy);
+                    if (i < btnCount - 1) {
+                        const gap = document.createElement("div");
+                        gap.style.height = btnGap + "px";
+                        leftSpace.appendChild(gap);
+                    }
+                }
+            }, 0);
+        });
     </script>
 </body>
 
