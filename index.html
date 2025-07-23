@@ -18,11 +18,20 @@
             <span class="text-3xl">🍊</span>
             <span class="font-bold text-xl text-orange-600">เกมส้ม</span>
         </div>
-        <!-- เมนูหรือปุ่มอื่น ๆ -->
-        <a href="https://www.youtube.com/live/TTaur_JfrCs?si=K-lf_ghMbp22_hwj" target="_blank"
-            class="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-4 py-2 rounded shadow transition">
-            How To Play
-        </a>
+        <!-- ปุ่มด้านขวา: How To Play และ Save/Load -->
+        <div class="flex items-center gap-2">
+            <button id="saveBtn"
+                class="bg-green-500 hover:bg-green-600 text-white font-semibold px-4 py-2 rounded shadow transition">Save</button>
+            <label for="loadFile"
+                class="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded shadow transition cursor-pointer">
+                Load
+                <input type="file" id="loadFile" accept=".json" class="hidden" />
+            </label>
+            <a href="https://www.youtube.com/live/TTaur_JfrCs?si=K-lf_ghMbp22_hwj" target="_blank"
+                class="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-4 py-2 rounded shadow transition">
+                How To Play
+            </a>
+        </div>
     </nav>
 
     <!-- Sidebar ด้านซ้าย -->
@@ -51,7 +60,6 @@
 
         <svg id="special-lines" class="absolute top-0 left-0 w-full h-full pointer-events-none z-0"
             style="overflow: visible;"></svg>
-
 
         <!-- Game Board + ปุ่มเพิ่มผู้เล่นด้านขวา -->
         <div class="relative flex flex-row items-start justify-center w-full">
@@ -109,6 +117,57 @@
         </div>
     </div>
 
+    <!-- Modal สำหรับเพิ่มผู้เล่น -->
+    <div id="player-modal-bg" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-lg p-6 w-120 relative">
+            <button id="close-modal"
+                class="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+            <h2 class="text-lg font-bold mb-4 text-orange-600">เพิ่มผู้เล่น</h2>
+            <form id="player-form" class="flex flex-col gap-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1">เลือกประเภทไอคอน</label>
+                    <div class="flex gap-3">
+                        <label class="flex items-center gap-1">
+                            <input type="radio" name="icon-type" value="url" checked>
+                            URL รูปภาพ
+                        </label>
+                        <label class="flex items-center gap-1">
+                            <input type="radio" name="icon-type" value="text">
+                            อิโมจิ / ข้อความ
+                        </label>
+                        <label class="flex items-center gap-1">
+                            <input type="radio" name="icon-type" value="upload">
+                            อัปโหลดไฟล์
+                        </label>
+                    </div>
+                </div>
+
+                <div id="url-input-wrapper">
+                    <label class="block text-sm font-medium mb-1 mt-2">ลิงก์รูปภาพผู้เล่น</label>
+                    <input type="url" id="player-img" class="w-full border rounded px-2 py-1" placeholder="https://...">
+                </div>
+
+                <div id="text-input-wrapper" class="hidden">
+                    <label class="block text-sm font-medium mb-1 mt-2">อิโมจิ หรือ ข้อความ</label>
+                    <input type="text" id="player-text" maxlength="3" class="w-full border rounded px-2 py-1"
+                        placeholder="🍉 หรือ A">
+                </div>
+
+                <div id="upload-input-wrapper" class="hidden">
+                    <label class="block text-sm font-medium mb-1 mt-2">เลือกรูปจากเครื่อง</label>
+                    <input type="file" id="player-upload" accept="image/*" class="w-full border rounded px-2 py-1">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium mb-1">เลือกสีขอบรูป</label>
+                    <input type="color" id="player-border" value="#f97316">
+                </div>
+                <button type="submit"
+                    class="bg-orange-500 hover:bg-orange-600 text-white rounded px-4 py-2 font-bold">ยืนยัน</button>
+            </form>
+        </div>
+    </div>
+
     <script>
         let isSpinning = false;
         let currentRotation = 0;
@@ -154,7 +213,7 @@
     <script>
         const TYPES = ["GOOD", "BAD", "CHANCE", "MONEY +1", "DUEL", "GAMBLE", "blank"];
 
-        const layout = [
+        let layout = [
             ["blank", "BAD", "CHANCE", "blank", "BAD", "blank", "CHANCE"],
             ["DUEL", "blank", null, "blank", "blank", null, "MONEY +1"],
             ["blank", "GOOD", "blank", "START", "blank", "CHANCE", "blank"],
@@ -218,7 +277,7 @@
                 const id = `${y}-${x}`;
                 positions[id] = { x, y };
 
-                // เฉพาะช่อง START, DUEL, GAMBLE ไม่ต้องแสดงเลข
+                // เฉพาะช่อง START ไม่ต้องแสดงเลข
                 if (type === "START") {
                     div.classList.add("bg-white", "font-bold");
                 } else {
@@ -257,48 +316,7 @@
                         // เมื่อเลือกแล้วเปลี่ยนประเภทช่อง
                         select.addEventListener("change", () => {
                             const next = select.value;
-                            typeSpan.textContent = next === "blank" ? "" : next;
-
-                            // เปลี่ยนสีข้อความ DUEL
-                            typeSpan.classList.remove("text-white");
-                            if (next === "DUEL") typeSpan.classList.add("text-white");
-
-                            // เปลี่ยนสีพื้นหลัง
-                            div.classList.remove(
-                                "bg-gray-300", "bg-purple-300", "bg-yellow-200", "bg-white",
-                                "bg-gradient-to-br", "bg-gradient-to-r",
-                                "from-red-400", "to-orange-400",
-                                "from-black", "to-blue-900",
-                                "from-yellow-300", "to-sky-300",
-                                "from-pink-400", "to-yellow-300"
-                            );
-                            if (next === "blank") {
-                                div.classList.add("bg-gray-300");
-                            } else if (next === "CHANCE") {
-                                div.classList.add("bg-purple-300");
-                            } else if (next === "MONEY +1") {
-                                div.classList.add("bg-yellow-200");
-                            } else if (next === "BAD") {
-                                div.classList.add("bg-gradient-to-r", "from-red-400", "to-orange-400");
-                            } else if (next === "DUEL") {
-                                div.classList.add("bg-gradient-to-r", "from-black", "to-blue-900");
-                            } else if (next === "GOOD") {
-                                div.classList.add("bg-gradient-to-r", "from-yellow-300", "to-sky-300");
-                            } else if (next === "GAMBLE") {
-                                div.classList.add("bg-gradient-to-r", "from-pink-400", "to-yellow-300");
-                            } else {
-                                div.classList.add("bg-white");
-                            }
-
-                            // เปลี่ยนสีตัวเลข
-                            const numSpan = div.querySelector("span:not(.cell-type)");
-                            numSpan.classList.remove("text-white", "text-black");
-                            if (next === "DUEL") {
-                                numSpan.classList.add("text-white");
-                            } else {
-                                numSpan.classList.add("text-black");
-                            }
-
+                            loadLayout(next, div, typeSpan);
                             select.remove();
                         });
 
@@ -313,6 +331,55 @@
                 board.appendChild(div);
             });
         });
+
+        function loadLayout(next, div, typeSpan) {
+            typeSpan.textContent = next === "blank" ? "" : next;
+
+            // อัปเดต layout array
+            layout[parseInt(div.dataset.row)][parseInt(div.dataset.col)] = next;
+
+            // เปลี่ยนสีข้อความ DUEL
+            typeSpan.classList.remove("text-white");
+            if (next === "DUEL") typeSpan.classList.add("text-white");
+
+            // เปลี่ยนสีพื้นหลัง
+            div.classList.remove(
+                "bg-gray-300", "bg-purple-300", "bg-yellow-200", "bg-white",
+                "bg-gradient-to-br", "bg-gradient-to-r",
+                "from-red-400", "to-orange-400",
+                "from-black", "to-blue-900",
+                "from-yellow-300", "to-sky-300",
+                "from-pink-400", "to-yellow-300"
+            );
+            if (next === "blank") {
+                div.classList.add("bg-gray-300");
+            } else if (next === "CHANCE") {
+                div.classList.add("bg-purple-300");
+            } else if (next === "MONEY +1") {
+                div.classList.add("bg-yellow-200");
+            } else if (next === "BAD") {
+                div.classList.add("bg-gradient-to-r", "from-red-400", "to-orange-400");
+            } else if (next === "DUEL") {
+                div.classList.add("bg-gradient-to-r", "from-black", "to-blue-900");
+            } else if (next === "GOOD") {
+                div.classList.add("bg-gradient-to-r", "from-yellow-300", "to-sky-300");
+            } else if (next === "GAMBLE") {
+                div.classList.add("bg-gradient-to-r", "from-pink-400", "to-yellow-300");
+            } else {
+                div.classList.add("bg-white");
+            }
+
+            // เปลี่ยนสีตัวเลข
+            const numSpan = div.querySelector("span:not(.cell-type)");
+            if (numSpan) {
+                numSpan.classList.remove("text-white", "text-black");
+                if (next === "DUEL") {
+                    numSpan.classList.add("text-white");
+                } else {
+                    numSpan.classList.add("text-black");
+                }
+            }
+        }
 
         // Define paths between tiles (manually based on visual layout)
         const paths = [
@@ -489,7 +556,7 @@
                 let currentBtn = null;
 
                 // เปิด modal เมื่อกดปุ่มเพิ่มผู้เล่น
-                function bindAddPlayerBtnEvents() {
+                window.bindAddPlayerBtnEvents = function () {
                     document.querySelectorAll('.add-player-btn').forEach(btn => {
                         btn.addEventListener('click', () => {
                             currentBtn = btn;
@@ -516,7 +583,13 @@
                 const playerUploadInput = document.getElementById('player-upload');
                 playerForm.addEventListener('submit', async (e) => {
                     e.preventDefault();
+
                     if (!currentBtn) return;
+
+                    // เปลี่ยนใน Modal เป็น URL Mode
+                    hideModeInModalAll();
+                    urlWrapper.classList.remove('hidden');
+
                     const borderColor = playerBorderInput.value;
 
                     let imgUrl = "";
@@ -537,10 +610,6 @@
                             reader.readAsDataURL(file);
                         });
                     }
-
-                    // เปลี่ยนใน Modal เป็น URL Mode
-                    hideModeInModalAll();
-                    urlWrapper.classList.remove('hidden');
 
                     // สร้างรูปผู้เล่นแทนปุ่ม
                     const img = document.createElement('img');
@@ -569,13 +638,7 @@
                         // ลบผู้เล่นเมื่อกด
                         menu.querySelector('button').addEventListener('click', () => {
                             // สร้างปุ่มใหม่แทน img
-                            const newBtn = document.createElement("button");
-                            newBtn.type = "button";
-                            newBtn.className = `add-player-btn flex items-center justify-center rounded-full bg-orange-400 hover:bg-orange-500 shadow w-[${img.style.width}] h-[${img.style.height}] text-white text-3xl transition-all`;
-                            newBtn.style.width = newBtn.style.height = img.style.width;
-                            newBtn.innerHTML = '<span class="pointer-events-none select-none">+</span>';
-                            newBtn.title = "เพิ่มผู้เล่น";
-                            newBtn.dataset.index = img.dataset.index;
+                            const newBtn = createAddPlayerButton(img.dataset.index, parseFloat(img.style.width));
                             img.replaceWith(newBtn);
                             bindAddPlayerBtnEvents();
                             menu.remove();
@@ -677,6 +740,7 @@
         }
     </script>
 
+    <!-- script เกี่ยวกับ index -->
     <script>
         function sidebar() {
             const toggleSidebar = document.getElementById("toggleSidebar");
@@ -684,58 +748,183 @@
 
             sidebar.classList.toggle("-translate-x-full");
         }
+
+        function createAddPlayerButton(index, size) {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = `add-player-btn flex items-center justify-center rounded-full bg-orange-400 hover:bg-orange-500 shadow text-white text-3xl transition-all`;
+            btn.style.width = btn.style.height = `${size}px`;
+            btn.innerHTML = '<span class="pointer-events-none select-none">+</span>';
+            btn.title = "เพิ่มผู้เล่น";
+            btn.dataset.index = index;
+            return btn;
+        }
+
+        document.getElementById('saveBtn').addEventListener('click', () => {
+            const saveData = { layout };
+
+            for (let i = 0; i < 4; i++) {
+                const player = document.querySelector(`.player-img[data-index="${i}"]`);
+                if (player) {
+                    saveData[`player${i + 1}`] = {
+                        src: player.src,
+                        border: player.style.borderColor || "#f97316"
+                    };
+                } else {
+                    saveData[`player${i + 1}`] = null;
+                }
+            }
+
+            const blob = new Blob([JSON.stringify(saveData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'game_save.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+
+
+        let hasLoadedBefore = false;
+        document.getElementById('loadFile').addEventListener('change', (e) => {
+            if (!hasLoadedBefore) {
+                const confirmRefresh = confirm("การโหลดจะแทนที่ข้อมูลทั้งหมดในที่นี้\n\nคุณต้องการโหลดไฟล์ต่อเลยหรือไม่?");
+                if (!confirmRefresh) {
+                    e.target.value = ''; // เคลียร์ input เพื่อให้เลือกใหม่ได้
+                    return;
+                }
+                hasLoadedBefore = true;
+            }
+
+            // ตรวจสอบว่าไฟล์ถูกเลือกหรือไม่
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                try {
+                    const data = JSON.parse(ev.target.result);
+                    if (!Array.isArray(data.layout)) throw "layout missing";
+
+                    // อัปเดต layout ตัวแปร
+                    layout = data.layout;
+
+                    // อัปเดตทุกช่องบนบอร์ด
+                    data.layout.forEach((row, y) => {
+                        row.forEach((type, x) => {
+                            const div = document.querySelector(`.cell[data-row="${y}"][data-col="${x}"]`);
+                            if (!div) return;  // ช่อง null ก็ข้าม
+                            const typeSpan = div.querySelector('.cell-type');
+                            loadLayout(type, div, typeSpan);
+                        });
+                    });
+
+                    // ลบ token ที่มี data-index (ตัวหมาก)
+                    document.querySelectorAll('#game-board .absolute[data-index]').forEach(el => el.remove());
+
+                    // แสดงผู้เล่นจากข้อมูล JSON
+                    for (let i = 0; i < 4; i++) {
+                        const key = `player${i + 1}`;
+                        const src = data[key];
+                        if (src) {
+                            createPlayerFromSrc(i, src);
+                        }
+                    }
+                } catch (err) {
+                    console.error("Error loading file:", err);
+                    alert("ไม่สามารถโหลดไฟล์นี้ได้ กรุณาใช้ไฟล์ที่ถูกต้องค่ะ 🍊");
+                }
+                // ลบค่า loadFile เพื่อสามารถโหลดเดิมซ้ำได้
+                e.target.value = '';
+            };
+            reader.readAsText(file);
+        });
+
+        function createPlayerFromSrc(index, data) {
+            const addPlayerDiv = document.getElementById('add-player-buttons');
+            const currentBtn = addPlayerDiv.querySelector(`[data-index="${index}"]`);
+            if (!currentBtn) return;
+
+            const btnSize = currentBtn.offsetWidth;
+            const imgUrl = typeof data === "string" ? data : data.src;
+            const border = typeof data === "string" ? "#f97316" : data.border || "#f97316";
+
+            const img = document.createElement('img');
+            img.src = imgUrl;
+            img.alt = "Player";
+            img.className = "player-img rounded-full object-cover cursor-pointer";
+            img.style.width = img.style.height = btnSize + "px";
+            img.style.border = `4px solid ${border}`;
+            img.style.background = "#fff";
+            img.style.boxShadow = "0 2px 8px rgba(0,0,0,0.15)";
+            img.dataset.index = index;
+
+
+            // เพิ่ม contextmenu สำหรับลบ (copy logic เดิม)
+            img.addEventListener('contextmenu', function (e) {
+                e.preventDefault();
+                document.querySelectorAll('.player-context-menu').forEach(m => m.remove());
+
+                const menu = document.createElement('div');
+                menu.className = "player-context-menu absolute bg-white border rounded shadow px-3 py-2 text-sm z-50";
+                menu.style.top = e.clientY + "px";
+                menu.style.left = e.clientX + "px";
+                menu.innerHTML = `<button class="text-red-600 hover:underline" type="button">ลบผู้เล่น</button>`;
+
+                menu.querySelector('button').addEventListener('click', () => {
+                    const newBtn = createAddPlayerButton(index, btnSize);
+                    img.replaceWith(newBtn);
+                    window.bindAddPlayerBtnEvents();
+                    menu.remove();
+
+                    board.querySelectorAll(`.absolute[data-index="${index}"]`).forEach(token => token.remove());
+                });
+
+                document.body.addEventListener('click', function removeMenu(ev) {
+                    if (!menu.contains(ev.target)) {
+                        menu.remove();
+                        document.body.removeEventListener('click', removeMenu);
+                    }
+                });
+
+                document.body.appendChild(menu);
+            });
+
+            currentBtn.replaceWith(img);
+
+            // เพิ่ม token ที่ตำแหน่ง START
+            const startCell = [...document.querySelectorAll('.cell')].find(cell => {
+                return cell.textContent.includes("START");
+            });
+
+            if (startCell) {
+                const token = document.createElement('div');
+                token.className = "absolute rounded-full border-4 cursor-grab active:cursor-grabbing";
+                token.style.width = "48px";
+                token.style.height = "48px";
+                token.style.backgroundImage = `url(${imgUrl})`;
+                token.style.backgroundSize = "cover";
+                token.style.borderColor = border;
+                token.style.backgroundColor = "#fff";
+                token.dataset.index = index;
+
+                const rect = startCell.getBoundingClientRect();
+                const boardRect = board.getBoundingClientRect();
+                token.style.left = `${rect.left - boardRect.left + rect.width / 2 - 16}px`;
+                token.style.top = `${rect.top - boardRect.top + rect.height / 2 - 16}px`;
+
+                token.draggable = true;
+                token.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/plain', token.dataset.index);
+                    token.classList.add("opacity-50");
+                });
+                token.addEventListener('dragend', (e) => {
+                    token.classList.remove("opacity-50");
+                });
+
+                board.appendChild(token);
+            }
+        }
     </script>
-
-    <!-- Modal สำหรับเพิ่มผู้เล่น -->
-    <div id="player-modal-bg" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
-        <div class="bg-white rounded-lg shadow-lg p-6 w-120 relative">
-            <button id="close-modal"
-                class="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
-            <h2 class="text-lg font-bold mb-4 text-orange-600">เพิ่มผู้เล่น</h2>
-            <form id="player-form" class="flex flex-col gap-4">
-                <div>
-                    <label class="block text-sm font-medium mb-1">เลือกประเภทไอคอน</label>
-                    <div class="flex gap-3">
-                        <label class="flex items-center gap-1">
-                            <input type="radio" name="icon-type" value="url" checked>
-                            URL รูปภาพ
-                        </label>
-                        <label class="flex items-center gap-1">
-                            <input type="radio" name="icon-type" value="text">
-                            อิโมจิ / ข้อความ
-                        </label>
-                        <label class="flex items-center gap-1">
-                            <input type="radio" name="icon-type" value="upload">
-                            อัปโหลดไฟล์
-                        </label>
-                    </div>
-                </div>
-
-                <div id="url-input-wrapper">
-                    <label class="block text-sm font-medium mb-1 mt-2">ลิงก์รูปภาพผู้เล่น</label>
-                    <input type="url" id="player-img" class="w-full border rounded px-2 py-1" placeholder="https://...">
-                </div>
-
-                <div id="text-input-wrapper" class="hidden">
-                    <label class="block text-sm font-medium mb-1 mt-2">อิโมจิ หรือ ข้อความ</label>
-                    <input type="text" id="player-text" maxlength="3" class="w-full border rounded px-2 py-1"
-                        placeholder="🍉 หรือ A">
-                </div>
-
-                <div id="upload-input-wrapper" class="hidden">
-                    <label class="block text-sm font-medium mb-1 mt-2">เลือกรูปจากเครื่อง</label>
-                    <input type="file" id="player-upload" accept="image/*" class="w-full border rounded px-2 py-1">
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium mb-1">เลือกสีขอบรูป</label>
-                    <input type="color" id="player-border" value="#f97316">
-                </div>
-                <button type="submit"
-                    class="bg-orange-500 hover:bg-orange-600 text-white rounded px-4 py-2 font-bold">ยืนยัน</button>
-            </form>
-        </div>
-    </div>
 
 </body>
 
