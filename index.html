@@ -43,17 +43,21 @@
             ☰
         </button>
         <!-- ปุ่มต่าง ๆ -->
-        <button class="w-full text-left px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-300 transition">
+        <button id="btnPageBoard" onclick="changePageBoard()"
+            class="w-full text-left px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-300 transition">
             🎲 เกมกระดาน
         </button>
-        <button class="w-full text-left px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition">
+        <button id="btnPageChar" onclick="changePageChar()"
+            class="w-full text-left px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition">
             🧍‍♀️ ตัวละคร
         </button>
-        <button class="w-full text-left px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition">
+        <button id="btnPageShop" onclick="changePageShop()"
+            class="w-full text-left px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition">
             🏪 ร้านค้า
         </button>
     </aside>
 
+    <!-- game-board-space -->
     <div id="game-board-space">
         <!-- ขยับเนื้อหาทั้งหมดลงมาให้ไม่ทับ Navbar -->
         <div class="pt-16"></div>
@@ -113,6 +117,118 @@
                 <button id="spinBtn"
                     class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 rounded-full bg-[#333] z-10 pointer-events-none">
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- character-space -->
+    <div id="character-space" class="hidden pt-14 px-4 w-full h-screen grid grid-cols-4 gap-4 max-w-8xl mx-auto">
+        <!-- ตัวละครผู้เล่น 1 -->
+        <div class="flex flex-col items-center bg-white rounded-2xl shadow-lg px-4 py-6 space-y-4">
+            <img src="" class="w-24 h-24 rounded-full border-4 border-orange-400 object-cover shadow mb-2" />
+            <div class="text-center space-y-3 w-full">
+                <!-- GOLD Section -->
+                <div class="bg-yellow-100 rounded-xl p-4 shadow-inner">
+                    <div class="flex items-center justify-center gap-2">
+                        <button
+                            class="gold-minus bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-full text-sm font-bold">-</button>
+                        <div class="font-bold text-yellow-600 text-lg">GOLD: <span class="gold-count">0</span></div>
+                        <button
+                            class="gold-plus bg-green-500 hover:bg-green-600 text-white w-8 h-8 rounded-full text-sm font-bold">+</button>
+                    </div>
+                </div>
+                <!-- Orange Section -->
+                <div class="bg-orange-100 rounded-xl p-4 shadow-inner">
+                    <div class="flex items-center justify-center gap-2">
+                        <button
+                            class="orange-minus bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-full text-sm font-bold">-</button>
+                        <div class="text-orange-600 text-md font-semibold">ส้ม: <span class="orange-count">0</span>
+                        </div>
+                        <button
+                            class="orange-plus bg-green-500 hover:bg-green-600 text-white w-8 h-8 rounded-full text-sm font-bold">+</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- ตัวละครผู้เล่น 2 -->
+        <div class="flex flex-col items-center bg-gray-100 rounded-2xl shadow-lg px-4 py-6 space-y-4">
+            <img src="" class="w-24 h-24 rounded-full border-4 border-orange-400 object-cover shadow mb-2" />
+            <div class="text-center space-y-3 w-full">
+                <!-- GOLD Section -->
+                <div class="bg-yellow-100 rounded-xl p-4 shadow-inner">
+                    <div class="flex items-center justify-center gap-2">
+                        <button
+                            class="gold-minus bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-full text-sm font-bold">-</button>
+                        <div class="font-bold text-yellow-600 text-lg">GOLD: <span class="gold-count">0</span></div>
+                        <button
+                            class="gold-plus bg-green-500 hover:bg-green-600 text-white w-8 h-8 rounded-full text-sm font-bold">+</button>
+                    </div>
+                </div>
+                <!-- Orange Section -->
+                <div class="bg-orange-100 rounded-xl p-4 shadow-inner">
+                    <div class="flex items-center justify-center gap-2">
+                        <button
+                            class="orange-minus bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-full text-sm font-bold">-</button>
+                        <div class="text-orange-600 text-md font-semibold">ส้ม: <span class="orange-count">0</span>
+                        </div>
+                        <button
+                            class="orange-plus bg-green-500 hover:bg-green-600 text-white w-8 h-8 rounded-full text-sm font-bold">+</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- ตัวละครผู้เล่น 3 -->
+        <div class="flex flex-col items-center bg-white rounded-2xl shadow-lg px-4 py-6 space-y-4">
+            <img src="" class="w-24 h-24 rounded-full border-4 border-orange-400 object-cover shadow mb-2" />
+            <div class="text-center space-y-3 w-full">
+                <!-- GOLD Section -->
+                <div class="bg-yellow-100 rounded-xl p-4 shadow-inner">
+                    <div class="flex items-center justify-center gap-2">
+                        <button
+                            class="gold-minus bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-full text-sm font-bold">-</button>
+                        <div class="font-bold text-yellow-600 text-lg">GOLD: <span class="gold-count">0</span></div>
+                        <button
+                            class="gold-plus bg-green-500 hover:bg-green-600 text-white w-8 h-8 rounded-full text-sm font-bold">+</button>
+                    </div>
+                </div>
+                <!-- Orange Section -->
+                <div class="bg-orange-100 rounded-xl p-4 shadow-inner">
+                    <div class="flex items-center justify-center gap-2">
+                        <button
+                            class="orange-minus bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-full text-sm font-bold">-</button>
+                        <div class="text-orange-600 text-md font-semibold">ส้ม: <span class="orange-count">0</span>
+                        </div>
+                        <button
+                            class="orange-plus bg-green-500 hover:bg-green-600 text-white w-8 h-8 rounded-full text-sm font-bold">+</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- ตัวละครผู้เล่น 4 -->
+        <div class="flex flex-col items-center bg-gray-100 rounded-2xl shadow-lg px-4 py-6 space-y-4">
+            <img src="" class="w-24 h-24 rounded-full border-4 border-orange-400 object-cover shadow mb-2" />
+            <div class="text-center space-y-3 w-full">
+                <!-- GOLD Section -->
+                <div class="bg-yellow-100 rounded-xl p-4 shadow-inner">
+                    <div class="flex items-center justify-center gap-2">
+                        <button
+                            class="gold-minus bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-full text-sm font-bold">-</button>
+                        <div class="font-bold text-yellow-600 text-lg">GOLD: <span class="gold-count">0</span></div>
+                        <button
+                            class="gold-plus bg-green-500 hover:bg-green-600 text-white w-8 h-8 rounded-full text-sm font-bold">+</button>
+                    </div>
+                </div>
+                <!-- Orange Section -->
+                <div class="bg-orange-100 rounded-xl p-4 shadow-inner">
+                    <div class="flex items-center justify-center gap-2">
+                        <button
+                            class="orange-minus bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-full text-sm font-bold">-</button>
+                        <div class="text-orange-600 text-md font-semibold">ส้ม: <span class="orange-count">0</span>
+                        </div>
+                        <button
+                            class="orange-plus bg-green-500 hover:bg-green-600 text-white w-8 h-8 rounded-full text-sm font-bold">+</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -504,6 +620,24 @@
                 });
             });
 
+            document.querySelectorAll('#character-space > div').forEach((card, index) => {
+                // Gold buttons
+                card.querySelector('.gold-plus').addEventListener('click', () => {
+                    updatePlayerStat(index, 'gold', 1);
+                });
+                card.querySelector('.gold-minus').addEventListener('click', () => {
+                    updatePlayerStat(index, 'gold', -1);
+                });
+
+                // Orange buttons
+                card.querySelector('.orange-plus').addEventListener('click', () => {
+                    updatePlayerStat(index, 'orange', 1);
+                });
+                card.querySelector('.orange-minus').addEventListener('click', () => {
+                    updatePlayerStat(index, 'orange', -1);
+                });
+            });
+
             setTimeout(() => {
                 const boardRect = gameBoard.getBoundingClientRect();
                 const boardHeight = boardRect.height;
@@ -641,6 +775,7 @@
                             const newBtn = createAddPlayerButton(img.dataset.index, parseFloat(img.style.width));
                             img.replaceWith(newBtn);
                             bindAddPlayerBtnEvents();
+                            updateCharacterSpace();
                             menu.remove();
 
                             // 🔥 ลบตัวหมากผู้เล่นที่ตรงกับ dataset.index
@@ -661,6 +796,7 @@
                     });
 
                     currentBtn.replaceWith(img);
+                    updateCharacterSpace();
 
                     modalBg.classList.add('hidden');
                     currentBtn = null;
@@ -740,8 +876,93 @@
         }
     </script>
 
+    <!-- script เกี่ยวกับ character page -->
+    <script>
+        // เพิ่มตัวแปรเก็บข้อมูลผู้เล่น
+        let playerStats = {
+            0: { gold: 2, orange: 0 },
+            1: { gold: 2, orange: 0 },
+            2: { gold: 2, orange: 0 },
+            3: { gold: 2, orange: 0 }
+        };
+
+        // ฟังก์ชันอัปเดตสถิติผู้เล่น
+        function updatePlayerStat(index, type, change) {
+            if (playerStats[index]) {
+                playerStats[index][type] = playerStats[index][type] + change;
+                updateCharacterSpace();
+            }
+        }
+
+        // ฟังก์ชันดึงข้อมูลผู้เล่นจาก add-player-buttons
+        function getPlayerData(index) {
+            const playerElement = document.querySelector(`.player-img[data-index="${index}"]`);
+            if (playerElement) {
+                return {
+                    src: playerElement.src,
+                    border: playerElement.style.borderColor || "#f97316"
+                };
+            }
+            return null;
+        }
+
+        // ฟังก์ชันอัปเดต character-space
+        function updateCharacterSpace() {
+            const characterCards = document.querySelectorAll('#character-space > div');
+
+            for (let i = 0; i < 4; i++) {
+                const playerData = getPlayerData(i);
+                const card = characterCards[i];
+                const img = card.querySelector('img');
+                const goldCount = card.querySelector('.gold-count');
+                const orangeCount = card.querySelector('.orange-count');
+
+                // อัปเดตรูปและขอบ
+                if (playerData) {
+                    img.src = playerData.src;
+                    img.style.borderColor = playerData.border;
+                    img.style.opacity = '1';
+                } else {
+                    img.src = '';
+                    img.style.borderColor = '#f97316';
+                    img.style.opacity = '0.3';
+                }
+
+                // อัปเดตสถิติ
+                goldCount.textContent = playerStats[i].gold;
+                orangeCount.textContent = playerStats[i].orange;
+            }
+        }
+    </script>
+
     <!-- script เกี่ยวกับ index -->
     <script>
+        const btnPageBoard = document.getElementById("btnPageBoard");
+        const btnPageChar = document.getElementById("btnPageChar");
+        const btnPageShop = document.getElementById("btnPageShop");
+
+        function changePageBoard() {
+            btnPageBoard.classList = "w-full text-left px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-300 transition";
+            btnPageChar.classList = "w-full text-left px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition";
+            btnPageShop.classList = "w-full text-left px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition";
+            document.getElementById("character-space").classList.add("hidden");
+            document.getElementById("game-board-space").classList.remove("hidden");
+        }
+        function changePageChar() {
+            btnPageBoard.classList = "w-full text-left px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition";
+            btnPageChar.classList = "w-full text-left px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-300 transition";
+            btnPageShop.classList = "w-full text-left px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition";
+            document.getElementById("game-board-space").classList.add("hidden");
+            document.getElementById("character-space").classList.remove("hidden");
+        }
+        function changePageShop() {
+            btnPageBoard.classList = "w-full text-left px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition";
+            btnPageChar.classList = "w-full text-left px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition";
+            btnPageShop.classList = "w-full text-left px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-300 transition";
+            document.getElementById("game-board-space").classList.add("hidden");
+            document.getElementById("character-space").classList.add("hidden");
+        }
+
         function sidebar() {
             const toggleSidebar = document.getElementById("toggleSidebar");
             const sidebar = document.getElementById("sidebar");
@@ -760,6 +981,7 @@
             return btn;
         }
 
+        // SAVE LOGIC
         document.getElementById('saveBtn').addEventListener('click', () => {
             const saveData = { layout };
 
@@ -785,6 +1007,7 @@
         });
 
 
+        // LOAD LOGIC
         let hasLoadedBefore = false;
         document.getElementById('loadFile').addEventListener('change', (e) => {
             if (!hasLoadedBefore) {
@@ -807,6 +1030,14 @@
 
                     // อัปเดต layout ตัวแปร
                     layout = data.layout;
+
+                    // เปลี่ยน playerStats เป็นค่าเริ่มต้น
+                    playerStats = {
+                        0: { gold: 2, orange: 0 },
+                        1: { gold: 2, orange: 0 },
+                        2: { gold: 2, orange: 0 },
+                        3: { gold: 2, orange: 0 }
+                    };
 
                     // อัปเดตทุกช่องบนบอร์ด
                     data.layout.forEach((row, y) => {
@@ -874,6 +1105,7 @@
                     const newBtn = createAddPlayerButton(index, btnSize);
                     img.replaceWith(newBtn);
                     window.bindAddPlayerBtnEvents();
+                    updateCharacterSpace();
                     menu.remove();
 
                     board.querySelectorAll(`.absolute[data-index="${index}"]`).forEach(token => token.remove());
@@ -922,6 +1154,7 @@
                 });
 
                 board.appendChild(token);
+                updateCharacterSpace();
             }
         }
     </script>
