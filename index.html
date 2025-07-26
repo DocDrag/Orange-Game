@@ -18,7 +18,7 @@
             <span class="text-3xl">🍊</span>
             <span class="font-bold text-xl text-orange-600">เกมส้ม</span>
         </div>
-        <!-- ปุ่มด้านขวา: How To Play และ Save/Load -->
+        <!-- ปุ่มด้านขวา: credit และ Save/Load -->
         <div class="flex items-center gap-2">
             <button id="saveBtn"
                 class="bg-green-500 hover:bg-green-600 text-white font-semibold px-4 py-2 rounded shadow transition">Save</button>
@@ -29,7 +29,7 @@
             </label>
             <a href="https://www.youtube.com/live/TTaur_JfrCs?si=K-lf_ghMbp22_hwj" target="_blank"
                 class="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-4 py-2 rounded shadow transition">
-                How To Play
+                Credit
             </a>
         </div>
     </nav>
@@ -56,6 +56,10 @@
             🏪 ร้านค้า
         </button>
     </aside>
+
+    <div id="toast"
+        class="fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-black text-white text-sm px-4 py-2 rounded shadow-lg z-50 hidden transition-opacity duration-500">
+    </div>
 
     <!-- game-board-space -->
     <div id="game-board-space">
@@ -254,13 +258,11 @@
     </div>
 
     <!-- shop space -->
-    <div id="shop-space"></div>
+    <div id="shop-space" class="hidden pt-12 px-4 w-full h-screen max-w-5xl mx-auto"></div>
 
     <!-- Modal สำหรับเพิ่มผู้เล่น -->
     <div id="player-modal-bg" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
         <div class="bg-white rounded-lg shadow-lg p-6 w-120 relative">
-            <button id="close-modal"
-                class="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
             <h2 class="text-lg font-bold mb-4 text-orange-600">เพิ่มผู้เล่น</h2>
             <form id="player-form" class="flex flex-col gap-4">
                 <div>
@@ -301,8 +303,67 @@
                     <label class="block text-sm font-medium mb-1">เลือกสีขอบรูป</label>
                     <input type="color" id="player-border" value="#f97316">
                 </div>
-                <button type="submit"
-                    class="bg-orange-500 hover:bg-orange-600 text-white rounded px-4 py-2 font-bold">ยืนยัน</button>
+                <div class="flex justify-end gap-2">
+                    <button type="button" id="close-modal"
+                        class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded">ยกเลิก</button>
+                    <button type="submit"
+                        class="bg-orange-500 hover:bg-orange-600 text-white rounded px-4 py-2 font-bold">ยืนยัน</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal เพิ่มสินค้า -->
+    <div id="item-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl shadow-xl p-6 w-full max-w-lg space-y-4">
+            <h3 class="text-xl font-bold text-center text-orange-600">เพิ่มสินค้า</h3>
+            <form id="item-form" class="flex flex-col gap-4" onsubmit="event.preventDefault(); saveItem();">
+                <div>
+                    <label class="block text-sm font-medium mb-1">เลือกประเภทไอคอน</label>
+                    <div class="flex gap-3">
+                        <label class="flex items-center gap-1">
+                            <input type="radio" name="icon-item" value="url" checked onchange="toggleItemIconType()">
+                            URL รูปภาพ
+                        </label>
+                        <label class="flex items-center gap-1">
+                            <input type="radio" name="icon-item" value="text" onchange="toggleItemIconType()">
+                            อิโมจิ / ข้อความ
+                        </label>
+                        <label class="flex items-center gap-1">
+                            <input type="radio" name="icon-item" value="upload" onchange="toggleItemIconType()">
+                            อัปโหลดไฟล์
+                        </label>
+                    </div>
+                </div>
+
+                <div id="item-image-url">
+                    <label class="block text-sm font-medium mb-1 mt-2">ลิงก์รูปภาพสินค้า</label>
+                    <input type="url" id="item-img" class="w-full border rounded px-2 py-1" placeholder="https://...">
+                </div>
+
+                <div id="item-emoji" class="hidden">
+                    <label class="block text-sm font-medium mb-1 mt-2">อิโมจิ หรือ ข้อความ</label>
+                    <input type="text" id="item-text" maxlength="3" class="w-full border rounded px-2 py-1"
+                        placeholder="🍉 หรือ A">
+                </div>
+
+                <div id="item-image-upload" class="hidden">
+                    <label class="block text-sm font-medium mb-1 mt-2">เลือกรูปจากเครื่อง</label>
+                    <input type="file" id="item-upload" accept="image/*" class="w-full border rounded px-2 py-1">
+                </div>
+
+                <div>
+                    <label class="block font-medium">รายละเอียดสินค้า</label>
+                    <textarea id="item-description" class="border rounded p-2 w-full" rows="3"
+                        placeholder="พิมพ์รายละเอียดสินค้า..."></textarea>
+                </div>
+
+                <div class="flex justify-end gap-2">
+                    <button type="button" onclick="closeItemModal()"
+                        class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded">ยกเลิก</button>
+                    <button type="submit"
+                        class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded">บันทึก</button>
+                </div>
             </form>
         </div>
     </div>
@@ -965,6 +1026,7 @@
         }
 
         function createOrange() {
+            showToast("กำลังเพิ่มส้ม...");
             const cell = getRandomCellForOrange();
             if (cell) createOrUpdateOrangeAtCell(cell);
         }
@@ -994,7 +1056,7 @@
 
                 menu.children[1].addEventListener('click', () => {
                     menu.remove();
-                    document.getElementById("result").innerHTML = `<p class="text-red-600">คลิกที่ตำแหน่งใหม่เพื่อย้ายส้ม</p>`;
+                    showToast("คลิกที่ตำแหน่งใหม่เพื่อย้ายส้ม");
                     setTimeout(() => {
                         const moveHandler = (ev) => {
                             const cell = ev.target.closest('.cell');
@@ -1029,6 +1091,244 @@
 
                 document.body.appendChild(menu);
             });
+        }
+    </script>
+
+    <!-- script เกี่ยวกับ shop page -->
+    <script>
+        const shopSpace = document.getElementById("shop-space");
+        shopSpace.innerHTML = `
+            <h2 class="text-2xl font-bold text-center text-orange-600">SHOP</h2>
+            <h2 class="text-lg font-bold text-center text-yellow-500 mb-4">ทุกอย่าง 1 G</h2>
+            <div class="grid grid-cols-9 gap-4">
+                ${Array.from({ length: 45 }).map((_, i) => `
+                    <div id="data-index-${i}" class="aspect-square bg-white border-4 border-orange-300 rounded-lg shadow flex items-center justify-center text-xl font-bold text-orange-400 cursor-pointer" onclick="openItemModal(${i})">
+                        +
+                    </div>
+                `).join('')}
+            </div>
+        `;
+
+        function toggleItemIconType() {
+            const selected = document.querySelector('input[name="icon-item"]:checked').value;
+            document.getElementById('item-image-url').classList.add('hidden');
+            document.getElementById('item-emoji').classList.add('hidden');
+            document.getElementById('item-image-upload').classList.add('hidden');
+
+            if (selected === 'url') {
+                document.getElementById('item-image-url').classList.remove('hidden');
+            } else if (selected === 'text') {
+                document.getElementById('item-emoji').classList.remove('hidden');
+            } else if (selected === 'upload') {
+                document.getElementById('item-image-upload').classList.remove('hidden');
+            }
+        }
+
+        function openItemModal(index) {
+            const cell = document.getElementById(`data-index-${index}`);
+            if (cell.classList.contains('disabled')) return;
+
+            const modal = document.getElementById('item-modal');
+            modal.classList.remove('hidden');
+            modal.dataset.index = index;
+            document.getElementById('item-form').reset();
+
+            // รีเซ็ต icon type เป็น URL และอัปเดตการแสดงผล
+            document.querySelector('input[name="icon-type"][value="url"]').checked = true;
+            toggleItemIconType();
+        }
+
+        function closeItemModal() {
+            document.getElementById('item-modal').classList.add('hidden');
+            document.getElementById('item-modal').dataset.index = '';
+            document.getElementById('item-image-url').value = '';
+            document.getElementById('item-emoji').value = '';
+            document.getElementById('item-image-upload').value = '';
+            document.getElementById('item-description').value = '';
+        }
+
+        function readFileAsDataURL(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        const cellSize = 20;
+
+        async function saveItem() {
+            const index = document.getElementById('item-modal').dataset.index;
+            const cell = document.getElementById(`data-index-${index}`);
+            const description = document.getElementById('item-description').value;
+            const selected = document.querySelector('input[name="icon-item"]:checked').value;
+
+            if (!cell) return;
+            cell.classList.add('disabled');
+
+            let imgUrl = '';
+
+            if (selected === "url") {
+                const url = document.getElementById("item-img").value;
+                if (!url) return alert("กรุณาใส่ URL รูปภาพค่ะ");
+                imgUrl = url;
+            }
+
+            else if (selected === "text") {
+                const text = document.getElementById("item-text").value;
+                if (!text) return alert("กรุณาใส่อิโมจิหรือข้อความค่ะ");
+                imgUrl = generateImageFromText(text); // หรือจะใส่เป็น div ก็ได้ตามดีไซน์พี่
+            }
+
+            else if (selected === "upload") {
+                const fileInput = document.getElementById("item-upload");
+                if (fileInput.files.length === 0) return alert("กรุณาเลือกไฟล์ภาพก่อนค่ะ");
+                const file = fileInput.files[0];
+                imgUrl = await readFileAsDataURL(file);
+            }
+
+            // ใส่ภาพลงช่อง
+            cell.innerHTML = `<img src="${imgUrl}" class="w-${cellSize} h-${cellSize} object-cover rounded">`;
+            cell.dataset.description = description;
+            bindItemContextMenu(cell, index, description);
+            closeItemModal();
+        }
+
+        function bindItemContextMenu(cell, index, description) {
+            cell.oncontextmenu = (e) => {
+                e.preventDefault();
+                document.querySelectorAll('.item-context-menu').forEach(m => m.remove());
+
+                const menu = document.createElement('div');
+                menu.className = "item-context-menu absolute bg-white border rounded shadow px-3 py-2 text-sm z-50";
+                menu.style.top = `${e.clientY}px`;
+                menu.style.left = `${e.clientX}px`;
+                menu.innerHTML = `
+                    <button class="block w-full text-left px-2 py-1 hover:bg-gray-100 text-blue-600">คัดลอกรายละเอียด</button>
+                    <button class="block w-full text-left px-2 py-1 hover:bg-gray-100 text-green-600">ย้ายไปยังบอร์ด</button>
+                    <button class="block w-full text-left px-2 py-1 hover:bg-gray-100 text-orange-600">ย้ายไปยังหน้าตัวละคร</button>
+                    <button class="block w-full text-left px-2 py-1 hover:bg-gray-100 text-rose-600">ลบไอเทม</button>
+                `;
+
+                // คัดลอกรายละเอียด
+                menu.children[0].onclick = () => {
+                    navigator.clipboard.writeText(description || "")
+                        .then(() => showToast("คัดลอกข้อมูลไอเทมเรียบร้อยแล้ว"))
+                        .catch(() => showToast("ไม่สามารถคัดลอกข้อมูลได้"));
+                    menu.remove();
+                };
+
+                // ย้ายไปยังบอร์ด
+                menu.children[1].onclick = () => {
+                    const newItem = cell.cloneNode(true);
+                    newItem.className = `absolute z-30 w-${cellSize/2} h-${cellSize/2} disabled destroy-immediately`;
+                    newItem.style.top = "100px";
+                    newItem.style.left = "100px";
+                    // ปรับขนาดให้เล็กลง
+                    const imageElement = newItem.querySelector('img');
+                    imageElement.classList.replace(`w-${cellSize}`, `w-${cellSize/2}`);
+                    imageElement.classList.replace(`h-${cellSize}`, `h-${cellSize/2}`);
+
+                    const description = cell.dataset.description || "";
+                    bindItemContextMenu(newItem, index, description);
+                    makeItemDraggable(newItem);
+                    document.getElementById("game-board-space").appendChild(newItem);
+
+                    // ลบจากร้านค้า
+                    if (cell.classList.contains('destroy-immediately')) {
+                        cell.remove();
+                    } else {
+                        // ถ้าไม่ใช่ destroy-immediately ให้แค่ลบข้อมูล
+                        cell.innerHTML = "+";
+                        cell.removeAttribute("data-description");
+                        cell.classList.remove('disabled');
+                    }
+                    menu.remove();
+                };
+
+                // ย้ายไปยังหน้าตัวละคร
+                menu.children[2].onclick = () => {
+                    const newItem = cell.cloneNode(true);
+                    newItem.className = `absolute z-30 w-${cellSize} h-${cellSize} disabled destroy-immediately`;
+                    newItem.style.top = "100px";
+                    newItem.style.left = "100px";
+                    // ปรับขนาดให้ปกติ
+                    const imageElement = newItem.querySelector('img');
+                    imageElement.classList.replace(`w-${cellSize/2}`, `w-${cellSize}`);
+                    imageElement.classList.replace(`h-${cellSize/2}`, `h-${cellSize}`);
+
+                    const description = cell.dataset.description || "";
+                    bindItemContextMenu(newItem, index, description);
+                    makeItemDraggable(newItem);
+                    document.getElementById("character-space").appendChild(newItem);
+
+                    // ลบจากร้านค้า
+                    if (cell.classList.contains('destroy-immediately')) {
+                        cell.remove();
+                    } else {
+                        // ถ้าไม่ใช่ destroy-immediately ให้แค่ลบข้อมูล
+                        cell.innerHTML = "+";
+                        cell.removeAttribute("data-description");
+                        cell.classList.remove('disabled');
+                    }
+                    menu.remove();
+                };
+
+                // ลบไอเทม
+                menu.children[3].onclick = () => {
+                    if (cell.classList.contains('destroy-immediately')) {
+                        cell.remove();
+                    } else {
+                        // ถ้าไม่ใช่ destroy-immediately ให้แค่ลบข้อมูล
+                        cell.innerHTML = "+";
+                        cell.removeAttribute("data-description");
+                        cell.classList.remove('disabled');
+                    }
+                    menu.remove();
+                };
+
+                // ปิดเมนูเมื่อคลิกที่อื่น
+                document.body.addEventListener('click', function removeMenu(ev) {
+                    if (!menu.contains(ev.target)) {
+                        menu.remove();
+                        document.body.removeEventListener('click', removeMenu);
+                    }
+                });
+
+                document.body.appendChild(menu);
+            };
+        }
+
+        function makeItemDraggable(item) {
+            item.style.position = "absolute";
+            item.style.cursor = "grab";
+            item.draggable = false;
+
+            item.onmousedown = (e) => {
+                e.preventDefault();
+
+                const shiftX = e.clientX - item.getBoundingClientRect().left;
+                const shiftY = e.clientY - item.getBoundingClientRect().top;
+
+                function moveAt(pageX, pageY) {
+                    item.style.left = pageX - shiftX + 'px';
+                    item.style.top = pageY - shiftY + 'px';
+                }
+
+                function onMouseMove(event) {
+                    moveAt(event.pageX, event.pageY);
+                }
+
+                document.addEventListener('mousemove', onMouseMove);
+
+                item.onmouseup = () => {
+                    document.removeEventListener('mousemove', onMouseMove);
+                    item.onmouseup = null;
+                };
+            };
+
+            item.ondragstart = () => false;
         }
     </script>
 
@@ -1129,6 +1429,20 @@
             sidebar.classList.toggle("-translate-x-full");
         }
 
+        function showToast(message) {
+            const toast = document.getElementById("toast");
+            toast.textContent = message;
+            toast.classList.remove("hidden");
+            toast.classList.add("show");
+
+            setTimeout(() => {
+                toast.classList.remove("show");
+                setTimeout(() => {
+                    toast.classList.add("hidden");
+                }, 500);
+            }, 2000); // แสดง 2 วินาที
+        }
+
         function createAddPlayerButton(index, size) {
             const btn = document.createElement("button");
             btn.type = "button";
@@ -1156,6 +1470,17 @@
                 }
             }
 
+            // Save shop items
+            for (let i = 0; i < 45; i++) {
+                const cell = document.getElementById(`data-index-${i}`);
+                if (cell && cell.innerHTML.trim() !== '+') {
+                    saveData[`shop${i}`] = {
+                        content: cell.innerHTML,
+                        title: cell.dataset.description || ''
+                    };
+                }
+            }
+
             const blob = new Blob([JSON.stringify(saveData, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -1164,7 +1489,6 @@
             a.click();
             URL.revokeObjectURL(url);
         });
-
 
         // LOAD LOGIC
         let hasLoadedBefore = false;
@@ -1219,6 +1543,20 @@
                         const src = data[key];
                         if (src) {
                             createPlayerFromSrc(i, src);
+                        }
+                    }
+
+                    // อัปเดต shop space
+                    for (let i = 0; i < 45; i++) {
+                        const cell = document.getElementById(`data-index-${i}`);
+                        const saved = data[`shop${i}`];
+                        if (cell && saved) {
+                            cell.innerHTML = saved.content;
+                            if (saved.title) {
+                                cell.dataset.description = saved.title;
+                            }
+                            bindItemContextMenu(cell, i, saved.title);
+                            cell.classList.add('disabled');
                         }
                     }
                 } catch (err) {
