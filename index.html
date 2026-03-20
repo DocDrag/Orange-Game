@@ -272,6 +272,7 @@
             <option value="GAMBLE">วงล้อ GAMBLE</option>
             <option value="GOOD">วงล้อ GOOD</option>
             <option value="BAD">วงล้อ BAD</option>
+            <option value="BOARD">วงล้อสุ่มช่องกระดาน</option>
         </select>
 
         <div id="mainWheelResult" class="text-2xl font-bold text-red-600 text-center min-h-[40px] mb-6 bg-white px-6 py-2 rounded-full shadow-md border border-gray-200 w-full max-w-md">
@@ -1703,15 +1704,15 @@
         const allWheelData = {
             CHANCE: [
                 // สองช่องใหญ่ เน้นสีให้เด่นชัด
-                { text: "สุ่มวงล้อ Good", weight: 9, color: "#4ade80" }, // สีเขียวสดใส (เรื่องดี)
-                { text: "สุ่มวงล้อ Bad", weight: 9, color: "#f87171" }, // สีแดงสดใส (เรื่องแย่)
+                { text: "สุ่มวงล้อ Good", weight: 9, color: "#4ade80" },
+                { text: "สุ่มวงล้อ Bad", weight: 9, color: "#f87171" },
                 
                 // 20 ช่องเล็ก สลับ 5 สีพาสเทลเพื่อไม่ให้สีชนกันและดูสวยงาม
-                { text: "ถอยหลัง 1 ช่อง", weight: 1, color: "#fde047" }, // สีเหลือง
-                { text: "เดินหน้า 1 ช่อง", weight: 1, color: "#7dd3fc" }, // สีฟ้า
-                { text: "มอบไอเทมตนเองให้คนอื่น", weight: 1, color: "#f9a8d4" }, // สีชมพู
-                { text: "ขโมยไอเทมจากคนอื่น", weight: 1, color: "#d8b4fe" }, // สีม่วง
-                { text: "กลับไปจุดเริ่มต้น", weight: 1, color: "#6ee7b7" }, // สีมิ้นต์
+                { text: "ถอยหลัง 1 ช่อง", weight: 1, color: "#fde047" },
+                { text: "เดินหน้า 1 ช่อง", weight: 1, color: "#7dd3fc" },
+                { text: "มอบไอเทมตนเองให้คนอื่น", weight: 1, color: "#f9a8d4" },
+                { text: "ขโมยไอเทมจากคนอื่น", weight: 1, color: "#d8b4fe" },
+                { text: "กลับไปจุดเริ่มต้น", weight: 1, color: "#6ee7b7" },
                 { text: "ไม่มีอะไรเกิดขึ้น", weight: 1, color: "#fde047" },
                 { text: "เสียไอเทม", weight: 1, color: "#7dd3fc" },
                 { text: "ได้รับไอเทม", weight: 1, color: "#f9a8d4" },
@@ -1730,16 +1731,16 @@
             ],
             // วงล้อแห่งความเสี่ยง (ใช้สีโทนร้อน รุนแรง)
             GAMBLE: [
-                { text: "ได้เงิน x2", weight: 1, color: "#fde047" }, // สีทอง/เหลือง
-                { text: "เสียทั้งหมด", weight: 2, color: "#ef4444" }, // สีแดงเข้ม (อันตรายสุด)
-                { text: "ได้เพิ่ม 1 G", weight: 1, color: "#f97316" }  // สีส้ม
+                { text: "ได้เงิน x2", weight: 1, color: "#fde047" },
+                { text: "เสียทั้งหมด", weight: 2, color: "#ef4444" },
+                { text: "ได้เพิ่ม 1 G", weight: 1, color: "#f97316" }
             ],
             // วงล้อของดี (ใช้โทนสีสว่าง สบายตา)
             GOOD: [
-                { text: "รับ 1G จากทุกคน", weight: 1, color: "#86efac" }, // เขียวอ่อน
-                { text: "ขโมยเงินใครก็ได้ 1 G", weight: 1, color: "#fde047" }, // เหลืองทอง
-                { text: "ได้เงิน 3 G", weight: 1, color: "#7dd3fc" }, // ฟ้าสดใส
-                { text: "ได้เงิน 2 G", weight: 1, color: "#d8b4fe" }, // ม่วงพาสเทล
+                { text: "รับ 1G จากทุกคน", weight: 1, color: "#86efac" },
+                { text: "ขโมยเงินใครก็ได้ 1 G", weight: 1, color: "#fde047" },
+                { text: "ได้เงิน 3 G", weight: 1, color: "#7dd3fc" },
+                { text: "ได้เงิน 2 G", weight: 1, color: "#d8b4fe" },
                 { text: "ได้เงิน 1 G", weight: 1, color: "#86efac" },
                 { text: "ขโมยไอเทม 1 ชิ้น", weight: 1, color: "#fde047" },
                 { text: "วาปไปช่องที่เลือก", weight: 1, color: "#7dd3fc" },
@@ -1747,17 +1748,26 @@
             ],
             // วงล้อของเสีย (ใช้โทนสีหม่น อึดอัด หรือเตือนภัย)
             BAD: [
-                { text: "เสียเงินครึ่งนึง", weight: 1, color: "#fca5a5" }, // แดงหม่น
-                { text: "เสียเงิน 3 G", weight: 1, color: "#fdba74" }, // ส้มหม่น
-                { text: "เสียเงิน 2 G", weight: 1, color: "#fde047" }, // เหลืองเตือนภัย
-                { text: "เสียเงิน 1 G", weight: 1, color: "#d6d3d1" }, // เทา
-                { text: "มอบส้มให้คนอื่น", weight: 1, color: "#c4b5fd" }, // ม่วงหม่น
+                { text: "เสียเงินครึ่งนึง", weight: 1, color: "#fca5a5" },
+                { text: "เสียเงิน 3 G", weight: 1, color: "#fdba74" },
+                { text: "เสียเงิน 2 G", weight: 1, color: "#fde047" },
+                { text: "เสียเงิน 1 G", weight: 1, color: "#d6d3d1" },
+                { text: "มอบส้มให้คนอื่น", weight: 1, color: "#c4b5fd" },
                 { text: "หมุนเพิ่ม 2 ครั้ง", weight: 1, color: "#fca5a5" },
                 { text: "ไม่เกิดอะไรขึ้น", weight: 1, color: "#fdba74" },
                 { text: "วาปไปช่องอื่นแบบสุ่ม", weight: 1, color: "#fde047" },
                 { text: "มอบไอเทม 1 ชิ้น", weight: 1, color: "#d6d3d1" },
                 { text: "เสียไอเทม 1 ชิ้น", weight: 1, color: "#c4b5fd" }
-            ]
+            ],
+            BOARD: (function() {
+                let arr = [];
+                const colors = ["#f87171", "#fb923c", "#fde047", "#86efac", "#93c5fd", "#c4b5fd"]; // สลับสีพาสเทล 6 สี
+                for (let i = 1; i <= 30; i++) {
+                    arr.push({ text: "ช่อง " + i, weight: 1, color: colors[i % colors.length] });
+                }
+                arr.push({ text: "ช่อง START", weight: 1, color: colors[32 % colors.length] });
+                return arr;
+            })()
         };
 
         let currentMainRot = 0;
@@ -1786,17 +1796,23 @@
                 
                 const midAngle = startAngle + (sliceAngle / 2);
                 
+                // จัดการขนาดฟอนต์ให้เหมาะกับจำนวนช่อง
                 if (type === 'CHANCE' && item.weight === 1) {
                     label.style.fontSize = '8px'; 
                     label.textContent = item.text.substring(0, 15); 
+                } else if (type === 'BOARD') {
+                    label.style.fontSize = '12px'; // วงล้อกระดานฟอนต์ต้องเล็กลง
+                    label.textContent = item.text;
                 } else {
                     label.style.fontSize = type === 'GAMBLE' ? '24px' : '14px';
                     label.textContent = item.text;
                 }
 
-                // [แก้ไขจุดบกพร่อง]: ลบ 90 องศาออก เพื่อให้แกนข้อความตรงกับแกนสี (0 องศาชี้ขึ้นด้านบน)
+                // ขยับตัวอักษรให้ห่างจากศูนย์กลางมากขึ้น ถ้าเป็นวงล้อ BOARD ที่ช่องมันแคบ
+                let transX = type === 'BOARD' ? 85 : 55;
+
                 label.style.transformOrigin = '0 50%';
-                label.style.transform = `translateY(-50%) rotate(${midAngle - 90}deg) translateX(55px)`;
+                label.style.transform = `translateY(-50%) rotate(${midAngle - 90}deg) translateX(${transX}px)`;
                 
                 wheel.appendChild(label);
                 currentAngle += sliceAngle;
