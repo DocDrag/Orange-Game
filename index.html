@@ -55,6 +55,10 @@
             class="w-full text-left px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition">
             🏪 ร้านค้า
         </button>
+        <button id="btnPageWheel" onclick="changePageWheel()"
+            class="w-full text-left px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition">
+            🎡 ระบบสุ่มวงล้อ
+        </button>
     </aside>
 
     <div id="toast"
@@ -259,6 +263,32 @@
 
     <!-- shop space -->
     <div id="shop-space" class="hidden pt-12 px-4 w-full h-screen max-w-5xl mx-auto"></div>
+
+    <div id="wheel-space" class="hidden pt-10 px-4 w-full h-screen max-w-4xl mx-auto flex flex-col items-center">
+        <h2 class="text-3xl font-bold text-center text-orange-600 mb-3 drop-shadow-sm">🎡 วงล้อเสี่ยงดวง</h2>
+        
+        <select id="wheelSelector" onchange="initMainWheel()" class="mb-3 p-3 w-64 text-lg border-2 border-orange-400 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 font-semibold text-center cursor-pointer">
+            <option value="CHANCE">วงล้อ CHANCE</option>
+            <option value="GAMBLE">วงล้อ GAMBLE</option>
+            <option value="GOOD">วงล้อ GOOD</option>
+            <option value="BAD">วงล้อ BAD</option>
+        </select>
+
+        <div id="mainWheelResult" class="text-2xl font-bold text-red-600 text-center min-h-[40px] mb-6 bg-white px-6 py-2 rounded-full shadow-md border border-gray-200 w-full max-w-md">
+            พร้อมสุ่มแล้ว!
+        </div>
+
+        <div class="relative w-[350px] h-[350px] sm:w-[450px] sm:h-[450px]">
+            <div class="absolute -top-4 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[20px] border-l-transparent border-r-[20px] border-r-transparent border-t-[30px] border-t-black z-20 drop-shadow-md"></div>
+            
+            <div id="mainWheelContainer" class="w-full h-full rounded-full shadow-2xl transition-transform duration-[3500ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] border-8 border-white cursor-pointer relative overflow-hidden bg-gray-200">
+                </div>
+            
+            <button id="mainSpinBtn" onclick="spinMainWheel()" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full bg-white border-4 border-gray-800 text-gray-800 font-black text-xl z-20 shadow-[0_0_15px_rgba(0,0,0,0.3)] hover:bg-gray-100 hover:scale-105 transition-all active:scale-95">
+                SPIN
+            </button>
+        </div>
+    </div>
 
     <!-- Modal สำหรับเพิ่มผู้เล่น -->
     <div id="player-modal-bg" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
@@ -1178,7 +1208,7 @@
             else if (selected === "text") {
                 const text = document.getElementById("item-text").value;
                 if (!text) return alert("กรุณาใส่อิโมจิหรือข้อความค่ะ");
-                imgUrl = generateImageFromText(text); // หรือจะใส่เป็น div ก็ได้ตามดีไซน์พี่
+                imgUrl = generateImageFromText(text);
             }
 
             else if (selected === "upload") {
@@ -1396,30 +1426,41 @@
         const btnPageBoard = document.getElementById("btnPageBoard");
         const btnPageChar = document.getElementById("btnPageChar");
         const btnPageShop = document.getElementById("btnPageShop");
+        const btnPageWheel = document.getElementById("btnPageWheel");
+
+        function resetNavButtons() {
+            const defaultClass = "w-full text-left px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition";
+            btnPageBoard.className = defaultClass;
+            btnPageChar.className = defaultClass;
+            btnPageShop.className = defaultClass;
+            btnPageWheel.className = defaultClass;
+            
+            document.getElementById("game-board-space").classList.add("hidden");
+            document.getElementById("character-space").classList.add("hidden");
+            document.getElementById("shop-space").classList.add("hidden");
+            document.getElementById("wheel-space").classList.add("hidden");
+        }
 
         function changePageBoard() {
-            btnPageBoard.classList = "w-full text-left px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-300 transition";
-            btnPageChar.classList = "w-full text-left px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition";
-            btnPageShop.classList = "w-full text-left px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition";
-            document.getElementById("character-space").classList.add("hidden");
+            resetNavButtons();
+            btnPageBoard.className = "w-full text-left px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-300 transition";
             document.getElementById("game-board-space").classList.remove("hidden");
-            document.getElementById("shop-space").classList.add("hidden");
         }
         function changePageChar() {
-            btnPageBoard.classList = "w-full text-left px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition";
-            btnPageChar.classList = "w-full text-left px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-300 transition";
-            btnPageShop.classList = "w-full text-left px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition";
-            document.getElementById("game-board-space").classList.add("hidden");
+            resetNavButtons();
+            btnPageChar.className = "w-full text-left px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-300 transition";
             document.getElementById("character-space").classList.remove("hidden");
-            document.getElementById("shop-space").classList.add("hidden");
         }
         function changePageShop() {
-            btnPageBoard.classList = "w-full text-left px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition";
-            btnPageChar.classList = "w-full text-left px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition";
-            btnPageShop.classList = "w-full text-left px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-300 transition";
-            document.getElementById("game-board-space").classList.add("hidden");
-            document.getElementById("character-space").classList.add("hidden");
+            resetNavButtons();
+            btnPageShop.className = "w-full text-left px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-300 transition";
             document.getElementById("shop-space").classList.remove("hidden");
+        }
+        function changePageWheel() {
+            resetNavButtons();
+            btnPageWheel.className = "w-full text-left px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-300 transition";
+            document.getElementById("wheel-space").classList.remove("hidden");
+            initMainWheel();
         }
 
         function sidebar() {
@@ -1656,6 +1697,171 @@
                 updateCharacterSpace();
             }
         }
+    </script>
+
+    <script>
+        const allWheelData = {
+            CHANCE: [
+                // สองช่องใหญ่ เน้นสีให้เด่นชัด
+                { text: "สุ่มวงล้อ Good", weight: 9, color: "#4ade80" }, // สีเขียวสดใส (เรื่องดี)
+                { text: "สุ่มวงล้อ Bad", weight: 9, color: "#f87171" }, // สีแดงสดใส (เรื่องแย่)
+                
+                // 20 ช่องเล็ก สลับ 5 สีพาสเทลเพื่อไม่ให้สีชนกันและดูสวยงาม
+                { text: "ถอยหลัง 1 ช่อง", weight: 1, color: "#fde047" }, // สีเหลือง
+                { text: "เดินหน้า 1 ช่อง", weight: 1, color: "#7dd3fc" }, // สีฟ้า
+                { text: "มอบไอเทมตนเองให้คนอื่น", weight: 1, color: "#f9a8d4" }, // สีชมพู
+                { text: "ขโมยไอเทมจากคนอื่น", weight: 1, color: "#d8b4fe" }, // สีม่วง
+                { text: "กลับไปจุดเริ่มต้น", weight: 1, color: "#6ee7b7" }, // สีมิ้นต์
+                { text: "ไม่มีอะไรเกิดขึ้น", weight: 1, color: "#fde047" },
+                { text: "เสียไอเทม", weight: 1, color: "#7dd3fc" },
+                { text: "ได้รับไอเทม", weight: 1, color: "#f9a8d4" },
+                { text: "ได้เงินจากคนอื่นแบบสุ่ม 1G", weight: 1, color: "#d8b4fe" },
+                { text: "วาปไปช่องอื่นแบบสุ่ม", weight: 1, color: "#6ee7b7" },
+                { text: "เสียเงินครึ่งนึง", weight: 1, color: "#fde047" },
+                { text: "เสียเงิน 1 G", weight: 1, color: "#7dd3fc" },
+                { text: "ได้ส้ม 1 ผล", weight: 1, color: "#f9a8d4" },
+                { text: "ได้เงิน 3 G", weight: 1, color: "#d8b4fe" },
+                { text: "ได้เงิน 2 G", weight: 1, color: "#6ee7b7" },
+                { text: "ได้เงิน 1 G", weight: 1, color: "#fde047" },
+                { text: "รับ 1G จากผู้เล่นทุกคน", weight: 1, color: "#7dd3fc" },
+                { text: "สุ่มวงล้อนี้อีก 2 ครั้ง", weight: 1, color: "#f9a8d4" },
+                { text: "วาปไป Gamble", weight: 1, color: "#d8b4fe" },
+                { text: "วาปไป Duel", weight: 1, color: "#6ee7b7" }
+            ],
+            // วงล้อแห่งความเสี่ยง (ใช้สีโทนร้อน รุนแรง)
+            GAMBLE: [
+                { text: "ได้เงิน x2", weight: 1, color: "#fde047" }, // สีทอง/เหลือง
+                { text: "เสียทั้งหมด", weight: 2, color: "#ef4444" }, // สีแดงเข้ม (อันตรายสุด)
+                { text: "ได้เพิ่ม 1 G", weight: 1, color: "#f97316" }  // สีส้ม
+            ],
+            // วงล้อของดี (ใช้โทนสีสว่าง สบายตา)
+            GOOD: [
+                { text: "รับ 1G จากทุกคน", weight: 1, color: "#86efac" }, // เขียวอ่อน
+                { text: "ขโมยเงินใครก็ได้ 1 G", weight: 1, color: "#fde047" }, // เหลืองทอง
+                { text: "ได้เงิน 3 G", weight: 1, color: "#7dd3fc" }, // ฟ้าสดใส
+                { text: "ได้เงิน 2 G", weight: 1, color: "#d8b4fe" }, // ม่วงพาสเทล
+                { text: "ได้เงิน 1 G", weight: 1, color: "#86efac" },
+                { text: "ขโมยไอเทม 1 ชิ้น", weight: 1, color: "#fde047" },
+                { text: "วาปไปช่องที่เลือก", weight: 1, color: "#7dd3fc" },
+                { text: "ได้รับไอเทม 1 ชิ้น", weight: 1, color: "#d8b4fe" }
+            ],
+            // วงล้อของเสีย (ใช้โทนสีหม่น อึดอัด หรือเตือนภัย)
+            BAD: [
+                { text: "เสียเงินครึ่งนึง", weight: 1, color: "#fca5a5" }, // แดงหม่น
+                { text: "เสียเงิน 3 G", weight: 1, color: "#fdba74" }, // ส้มหม่น
+                { text: "เสียเงิน 2 G", weight: 1, color: "#fde047" }, // เหลืองเตือนภัย
+                { text: "เสียเงิน 1 G", weight: 1, color: "#d6d3d1" }, // เทา
+                { text: "มอบส้มให้คนอื่น", weight: 1, color: "#c4b5fd" }, // ม่วงหม่น
+                { text: "หมุนเพิ่ม 2 ครั้ง", weight: 1, color: "#fca5a5" },
+                { text: "ไม่เกิดอะไรขึ้น", weight: 1, color: "#fdba74" },
+                { text: "วาปไปช่องอื่นแบบสุ่ม", weight: 1, color: "#fde047" },
+                { text: "มอบไอเทม 1 ชิ้น", weight: 1, color: "#d6d3d1" },
+                { text: "เสียไอเทม 1 ชิ้น", weight: 1, color: "#c4b5fd" }
+            ]
+        };
+
+        let currentMainRot = 0;
+        let isMainWheelSpinning = false;
+
+        function initMainWheel() {
+            const type = document.getElementById('wheelSelector').value;
+            const data = allWheelData[type];
+            const wheel = document.getElementById('mainWheelContainer');
+            wheel.innerHTML = ''; 
+            document.getElementById('mainWheelResult').textContent = `วงล้อ ${type} พร้อมใช้งาน!`;
+
+            let totalWeight = data.reduce((sum, item) => sum + item.weight, 0);
+            let currentAngle = 0;
+            let gradientParts = [];
+
+            data.forEach((item, index) => {
+                const sliceAngle = (item.weight / totalWeight) * 360;
+                const startAngle = currentAngle;
+                const endAngle = currentAngle + sliceAngle;
+
+                gradientParts.push(`${item.color} ${startAngle}deg ${endAngle}deg`);
+
+                const label = document.createElement('div');
+                label.className = 'absolute top-1/2 left-1/2 font-bold text-black drop-shadow-md origin-left pointer-events-none whitespace-nowrap';
+                
+                const midAngle = startAngle + (sliceAngle / 2);
+                
+                if (type === 'CHANCE' && item.weight === 1) {
+                    label.style.fontSize = '8px'; 
+                    label.textContent = item.text.substring(0, 15); 
+                } else {
+                    label.style.fontSize = type === 'GAMBLE' ? '24px' : '14px';
+                    label.textContent = item.text;
+                }
+
+                // [แก้ไขจุดบกพร่อง]: ลบ 90 องศาออก เพื่อให้แกนข้อความตรงกับแกนสี (0 องศาชี้ขึ้นด้านบน)
+                label.style.transformOrigin = '0 50%';
+                label.style.transform = `translateY(-50%) rotate(${midAngle - 90}deg) translateX(55px)`;
+                
+                wheel.appendChild(label);
+                currentAngle += sliceAngle;
+            });
+
+            wheel.style.background = `conic-gradient(from 0deg, ${gradientParts.join(', ')})`;
+            
+            currentMainRot = 0;
+            wheel.style.transform = `rotate(0deg)`;
+        }
+
+        function spinMainWheel() {
+            if (isMainWheelSpinning) return;
+            isMainWheelSpinning = true;
+            
+            const resultBox = document.getElementById('mainWheelResult');
+            resultBox.innerHTML = '🎲 <i>กำลังสุ่ม...</i>';
+            resultBox.classList.add("animate-pulse");
+
+            const type = document.getElementById('wheelSelector').value;
+            const data = allWheelData[type];
+            const totalWeight = data.reduce((sum, item) => sum + item.weight, 0);
+
+            const randomVal = Math.random() * totalWeight;
+            let accumulated = 0;
+            let winnerIndex = 0;
+
+            for (let i = 0; i < data.length; i++) {
+                accumulated += data[i].weight;
+                if (randomVal <= accumulated) {
+                    winnerIndex = i;
+                    break;
+                }
+            }
+
+            const winner = data[winnerIndex];
+
+            let startAngleOfWinner = 0;
+            for(let i=0; i < winnerIndex; i++) {
+                startAngleOfWinner += (data[i].weight / totalWeight) * 360;
+            }
+            const sliceAngle = (winner.weight / totalWeight) * 360;
+            
+            const randomJitter = (Math.random() * sliceAngle * 0.8) + (sliceAngle * 0.1); 
+            const stopAngle = startAngleOfWinner + randomJitter;
+
+            const spins = (Math.floor(Math.random() * 3) + 5) * 360; 
+            const currentMod = currentMainRot % 360;
+            
+            const targetRotation = currentMainRot + spins + ((360 - stopAngle) - currentMod + 360) % 360;
+
+            const wheel = document.getElementById('mainWheelContainer');
+            wheel.style.transform = `rotate(${targetRotation}deg)`;
+            currentMainRot = targetRotation;
+
+            setTimeout(() => {
+                resultBox.classList.remove("animate-pulse");
+                resultBox.innerHTML = `🎉 ได้รับ: <b class="text-red-600">${winner.text}</b> 🎉`;
+                isMainWheelSpinning = false;
+            }, 3500);
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initMainWheel();
+        });
     </script>
 
 </body>
