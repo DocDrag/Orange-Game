@@ -1805,7 +1805,17 @@
             wheel.style.background = `conic-gradient(from 0deg, ${gradientParts.join(', ')})`;
             
             currentMainRot = 0;
-            wheel.style.transform = `rotate(0deg)`;
+            // 1. ปิดแอนิเมชันชั่วคราว
+            wheel.style.transition = 'none'; 
+            
+            // 2. จับวงล้อหันกลับมาที่ 0 องศาแบบกระพริบตา
+            wheel.style.transform = `rotate(0deg)`; 
+            
+            // 3. บังคับให้หน้าเว็บอัปเดตการแสดงผลทันที (Force reflow)
+            void wheel.offsetWidth; 
+            
+            // 4. ล้างค่าที่ปิดแอนิเมชันออก เพื่อให้คลาสของ Tailwind กลับมาทำงานเวลากดปุ่ม Spin
+            wheel.style.transition = '';
         }
 
         function spinMainWheel() {
