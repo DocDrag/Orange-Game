@@ -20,3 +20,95 @@ body {
   font-weight: bold;
   border: 2px solid #000;
 }
+
+/* Layout หลัก: แบ่ง 3 คอลัมน์ (แผงเดิมพัน, วงล้อ, แผงเดิมพัน) */
+.duel-arena-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem; /* ระยะห่างระหว่างไอเทม */
+    width: 100%;
+    margin-top: 1rem;
+    margin-bottom: 3rem;
+}
+
+/* สไตล์พื้นฐานของแผงเดิมพัน */
+.bet-panel {
+    flex: 1; /* ขยายเท่าๆ กัน */
+    max-width: 320px;
+    min-width: 280px;
+    transition: all 0.3s ease;
+}
+
+.bet-panel:hover {
+    transform: translateY(-5px);
+}
+
+/* ป้ายชื่อในวงล้อ (JS จะเป็นคนสร้าง) */
+.duel-wheel-label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    font-weight: 900;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    transform-origin: left center;
+    pointer-events: none;
+    text-align: center;
+    line-height: 1.1;
+    white-space: nowrap;
+}
+
+/* ซ่อนช่องกรอกบน Desktop (จะไปโผล่ใน Bet Panel) */
+.duel-mobile-bets {
+    display: none;
+}
+
+/* ============================================= */
+/* Responsive Design (สำหรับมือถือ) */
+/* ============================================= */
+@media (max-width: 1024px) {
+    .duel-arena-container {
+        gap: 1rem;
+    }
+    .bet-panel {
+        min-width: 250px;
+    }
+}
+
+/* เมื่อหน้าจอเล็กกว่า 768px (แท็บเล็ต/มือถือ) */
+@media (max-width: 768px) {
+    .duel-arena-container {
+        flex-direction: column; /* เรียงเป็นเส้นตรงแนวตั้ง */
+        gap: 2rem;
+    }
+
+    /* ซ่อนแผงเดิมพันแบบ Desktop แล้วใช้แบบ Mobile Input แทน */
+    .bet-panel {
+        display: none;
+    }
+
+    .duel-mobile-bets {
+        display: block;
+        margin-top: 0;
+        margin-bottom: 2rem;
+    }
+
+    /* ย่อขนาดวงล้อ */
+    #duelWheelContainer {
+        width: 320px;
+        height: 320px;
+        border-width: 8px;
+    }
+    
+    .wheel-panel .absolute.-top-5 {
+        top: -3px;
+    }
+
+    #duelSpinBtn {
+        width: 20px;
+        height: 20px;
+        font-size: 1.25rem;
+        border-width: 6px;
+    }
+}
