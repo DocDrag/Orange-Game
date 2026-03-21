@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Game Board</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css" />
 </head>
 
@@ -36,37 +37,52 @@
 
     <!-- Sidebar ด้านซ้าย -->
     <aside id="sidebar"
-        class="fixed top-16 left-0 w-64 h-full bg-white shadow z-40 flex flex-col items-start p-4 gap-3 border-r border-gray-200 transform -translate-x-full transition-transform duration-300">
-        <!-- ปุ่ม ☰ -->
+        class="fixed top-16 left-0 w-72 h-full bg-white/90 backdrop-blur-2xl shadow-[15px_0_30px_rgba(0,0,0,0.04)] z-40 flex flex-col p-6 gap-3 border-r border-white/50 transform -translate-x-full transition-transform duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]">
+        
+        <!-- แท็บปุ่ม ☰ เลื่อนซ้ายขวา (เปลี่ยนเป็นลูกศร) -->
         <button id="toggleSidebar" onclick="sidebar()"
-            class="absolute -right-9 top-4 bg-white border-r border-gray-300 text-gray-700 px-3 py-1 rounded-r z-40">
-            ☰
+            class="absolute -right-[48px] top-8 bg-white/90 backdrop-blur-xl border border-gray-100/50 text-gray-400 hover:text-orange-500 w-12 h-14 rounded-r-2xl shadow-[8px_4px_20px_rgba(0,0,0,0.06)] z-40 transition-all duration-300 hover:w-14 active:scale-95 flex items-center justify-center group">
+            <i class="fas fa-chevron-right text-lg transition-transform duration-300 group-hover:translate-x-1" id="sidebarIcon"></i>
         </button>
-        <!-- ปุ่มต่าง ๆ -->
-        <button id="btnPageBoard" onclick="changePageBoard()"
-            class="w-full text-left px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-300 transition">
-            🎲 เกมกระดาน
+        
+        <!-- Header ภายใน Sidebar -->
+        <div class="flex items-center gap-3 mb-2 px-2">
+            <div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-500 font-black text-xl shadow-inner">
+                <i class="fas fa-gamepad text-base"></i>
+            </div>
+            <div class="text-sm font-black text-gray-800 uppercase tracking-widest drop-shadow-sm leading-tight">
+                เมนูหลัก
+                <span class="text-orange-500 font-bold block text-[10px] tracking-normal uppercase">Main Menu</span>
+            </div>
+        </div>
+
+        <hr class="border-gray-100/80 mb-2 w-full">
+
+        <!-- ปุ่มต่าง ๆ (จะถูกจัดการ Class ด้วย JavaScript) -->
+        <button id="btnPageBoard" onclick="changePageBoard()">
+            <div><i class="fas fa-dice text-lg"></i></div>
+            เกมกระดาน
         </button>
-        <button id="btnPageChar" onclick="changePageChar()"
-            class="w-full text-left px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition">
-            🧍‍♀️ ตัวละคร
+        <button id="btnPageChar" onclick="changePageChar()">
+            <div><i class="fas fa-users text-lg"></i></div>
+            ตัวละคร
         </button>
-        <button id="btnPageShop" onclick="changePageShop()"
-            class="w-full text-left px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition">
-            🏪 ร้านค้า
+        <button id="btnPageShop" onclick="changePageShop()">
+            <div><i class="fas fa-store text-lg"></i></div>
+            ร้านค้า
         </button>
-        <button id="btnPageWheel" onclick="changePageWheel()"
-            class="w-full text-left px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition">
-            🎡 ระบบสุ่มวงล้อ
+        <button id="btnPageWheel" onclick="changePageWheel()">
+            <div><i class="fas fa-dharmachakra text-lg"></i></div>
+            ระบบสุ่มวงล้อ
         </button>
-        <button id="btnPageDuel" onclick="changePageDuel()"
-            class="w-full text-left px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition">
-            ⚔️ ระบบดูเอล
+        <button id="btnPageDuel" onclick="changePageDuel()">
+            <div><i class="fas fa-khanda text-lg"></i></div>
+            ระบบดูเอล
         </button>
     </aside>
 
     <div id="toast"
-        class="fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-black text-white text-sm px-4 py-2 rounded shadow-lg z-50 hidden transition-opacity duration-500">
+        class="fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-sm px-6 py-3 rounded-full shadow-2xl z-50 hidden transition-opacity duration-500 font-medium">
     </div>
 
     <!-- game-board-space -->
@@ -1509,60 +1525,85 @@
 
     <!-- script เกี่ยวกับ index -->
     <script>
-        const btnPageBoard = document.getElementById("btnPageBoard");
-        const btnPageChar = document.getElementById("btnPageChar");
-        const btnPageShop = document.getElementById("btnPageShop");
-        const btnPageWheel = document.getElementById("btnPageWheel");
-        const btnPageDuel = document.getElementById("btnPageDuel"); // เพิ่มตัวแปรนี้ด้านบนด้วย
+        // รายชื่อปุ่มและหน้า (จัดเก็บแบบ Array เพื่อง่ายต่อการวนลูป)
+        const navItems = [
+            { id: "btnPageBoard", spaceId: "game-board-space" },
+            { id: "btnPageChar", spaceId: "character-space" },
+            { id: "btnPageShop", spaceId: "shop-space" },
+            { id: "btnPageWheel", spaceId: "wheel-space" },
+            { id: "btnPageDuel", spaceId: "duel-space" }
+        ];
 
+        // คลาสของปุ่มเวลาปกติ (ยังไม่ได้เลือก) - อัปเกรดให้เด้งขวานิดๆ เมื่อ Hover
+        const inactiveBtnClass = "w-full flex items-center gap-4 px-4 py-3.5 text-gray-500 bg-transparent rounded-2xl hover:bg-orange-50 hover:text-orange-600 hover:translate-x-1 transition-all duration-300 font-medium group cursor-pointer border border-transparent";
+        const inactiveIconDivClass = "w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-white group-hover:text-orange-500 group-hover:shadow-sm transition-all duration-300 transform group-hover:rotate-6";
+
+        // คลาสของปุ่มเวลาที่กำลังถูกเลือก (Active) - อัปเกรดแบบไล่สี และดันขวาถาวร
+        const activeBtnClass = "w-full flex items-center gap-4 px-4 py-3.5 text-orange-700 bg-gradient-to-r from-orange-100/80 to-orange-50/30 rounded-2xl transition-all duration-300 font-bold shadow-sm border border-orange-200/50 translate-x-2 group cursor-default relative";
+        const activeIconDivClass = "w-10 h-10 rounded-xl bg-gradient-to-br from-orange-400 to-orange-600 shadow-md shadow-orange-500/40 flex items-center justify-center text-white group-hover:scale-110 transition-transform duration-300";
+
+        // ฟังก์ชันล้างสถานะปุ่มทั้งหมดให้กลับเป็นค่าเริ่มต้น
         function resetNavButtons() {
-            const defaultClass = "w-full text-left px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition";
-            btnPageBoard.className = defaultClass;
-            btnPageChar.className = defaultClass;
-            btnPageShop.className = defaultClass;
-            btnPageWheel.className = defaultClass;
-            btnPageDuel.className = defaultClass; // เพิ่มบรรทัดนี้
-
-            document.getElementById("game-board-space").classList.add("hidden");
-            document.getElementById("character-space").classList.add("hidden");
-            document.getElementById("shop-space").classList.add("hidden");
-            document.getElementById("wheel-space").classList.add("hidden");
-            document.getElementById("duel-space").classList.add("hidden"); // เพิ่มบรรทัดนี้
+            navItems.forEach(item => {
+                const btn = document.getElementById(item.id);
+                btn.className = inactiveBtnClass;
+                // ไอคอนด้านใน <div> ตัวแรก
+                btn.firstElementChild.className = inactiveIconDivClass;
+                document.getElementById(item.spaceId).classList.add("hidden");
+            });
         }
 
-        function changePageDuel() {
+
+        // ฟังก์ชันจัดการตอนเปลี่ยนหน้า
+        function setActivePage(btnId, spaceId) {
             resetNavButtons();
-            btnPageDuel.className = "w-full text-left px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-300 transition";
-            document.getElementById("duel-space").classList.remove("hidden");
-            updateDuelWheel();
-        }
-        function changePageBoard() {
-            resetNavButtons();
-            btnPageBoard.className = "w-full text-left px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-300 transition";
-            document.getElementById("game-board-space").classList.remove("hidden");
-        }
-        function changePageChar() {
-            resetNavButtons();
-            btnPageChar.className = "w-full text-left px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-300 transition";
-            document.getElementById("character-space").classList.remove("hidden");
-        }
-        function changePageShop() {
-            resetNavButtons();
-            btnPageShop.className = "w-full text-left px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-300 transition";
-            document.getElementById("shop-space").classList.remove("hidden");
-        }
-        function changePageWheel() {
-            resetNavButtons();
-            btnPageWheel.className = "w-full text-left px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-300 transition";
-            document.getElementById("wheel-space").classList.remove("hidden");
-            initMainWheel();
+            const btn = document.getElementById(btnId);
+            btn.className = activeBtnClass;
+            btn.firstElementChild.className = activeIconDivClass;
+            
+            document.getElementById(spaceId).classList.remove("hidden");
+            
+            // ปิด Sidebar อัตโนมัติในหน้าจอมือถือ/แท็บเล็ต
+            if(window.innerWidth < 768) {
+                const sidebarEl = document.getElementById("sidebar");
+                if (!sidebarEl.classList.contains("-translate-x-full")) {
+                    sidebar(); 
+                }
+            }
         }
 
+        // เชื่อมฟังก์ชันคลิก
+        function changePageBoard() { setActivePage("btnPageBoard", "game-board-space"); }
+        function changePageChar() { setActivePage("btnPageChar", "character-space"); }
+        function changePageShop() { setActivePage("btnPageShop", "shop-space"); }
+        function changePageWheel() { setActivePage("btnPageWheel", "wheel-space"); initMainWheel(); }
+        function changePageDuel() { setActivePage("btnPageDuel", "duel-space"); updateDuelWheel(); }
+
+        // เริ่มต้นด้วยหน้า Board เสมอ (ตั้งค่าให้ตรงกัน)
+        window.addEventListener('DOMContentLoaded', () => {
+            changePageBoard();
+        });
+
+        // ฟังก์ชันเปิด/ปิด Sidebar ตัวใหม่
         function sidebar() {
-            const toggleSidebar = document.getElementById("toggleSidebar");
-            const sidebar = document.getElementById("sidebar");
-
-            sidebar.classList.toggle("-translate-x-full");
+            const sidebarEl = document.getElementById("sidebar");
+            const icon = document.getElementById("sidebarIcon");
+            const toggleBtn = document.getElementById("toggleSidebar");
+            
+            sidebarEl.classList.toggle("-translate-x-full");
+            
+            // สลับลูกศร และปรับขนาดปุ่มให้สมดุลตอนเปิด/ปิด
+            if (sidebarEl.classList.contains("-translate-x-full")) {
+                icon.classList.remove("fa-chevron-left");
+                icon.classList.add("fa-chevron-right");
+                toggleBtn.classList.remove("hover:w-14");
+                toggleBtn.classList.add("hover:w-16"); // ยื่นออกไปนิดนึงตอนปิดเรียกร้องความสนใจ
+            } else {
+                icon.classList.remove("fa-chevron-right");
+                icon.classList.add("fa-chevron-left");
+                toggleBtn.classList.remove("hover:w-16");
+                toggleBtn.classList.add("hover:w-14");
+            }
         }
 
         function showToast(message) {
@@ -1576,7 +1617,7 @@
                 setTimeout(() => {
                     toast.classList.add("hidden");
                 }, 500);
-            }, 2000); // แสดง 2 วินาที
+            }, 2000); 
         }
 
         function createAddPlayerButton(index, size) {
