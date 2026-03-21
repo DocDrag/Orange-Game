@@ -1761,11 +1761,12 @@
             ],
             BOARD: (function() {
                 let arr = [];
-                const colors = ["#f87171", "#fb923c", "#fde047", "#86efac", "#93c5fd", "#c4b5fd"]; // สลับสีพาสเทล 6 สี
-                for (let i = 1; i <= 30; i++) {
+                const colors = ["#f87171", "#fb923c", "#fde047", "#86efac", "#93c5fd", "#c4b5fd", "#f9a8d4"]; // สลับสีพาสเทล 7 สี
+                let i = 1;
+                for (i = 1; i <= 30; i++) {
                     arr.push({ text: "ช่อง " + i, weight: 1, color: colors[i % colors.length] });
                 }
-                arr.push({ text: "ช่อง START", weight: 1, color: colors[32 % colors.length] });
+                arr.push({ text: "ช่อง START", weight: 1, color: colors[i % colors.length] });
                 return arr;
             })()
         };
