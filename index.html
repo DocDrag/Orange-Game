@@ -266,26 +266,33 @@
 
     <div id="wheel-space" class="hidden pt-10 px-4 w-full h-screen max-w-4xl mx-auto flex flex-col items-center">
         <h2 class="text-3xl font-bold text-center text-orange-600 mb-3 drop-shadow-sm">🎡 วงล้อเสี่ยงดวง</h2>
-        
-        <select id="wheelSelector" onchange="initMainWheel()" class="mb-3 p-3 w-64 text-lg border-2 border-orange-400 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 font-semibold text-center cursor-pointer">
+
+        <select id="wheelSelector" onchange="initMainWheel()"
+            class="mb-3 p-3 w-64 text-lg border-2 border-orange-400 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 font-semibold text-center cursor-pointer">
             <option value="CHANCE">วงล้อ CHANCE</option>
             <option value="GAMBLE">วงล้อ GAMBLE</option>
             <option value="GOOD">วงล้อ GOOD</option>
             <option value="BAD">วงล้อ BAD</option>
             <option value="BOARD">วงล้อสุ่มช่องกระดาน</option>
+            <option value="PLAYER">วงล้อสุ่มผู้เล่น</option>
         </select>
 
-        <div id="mainWheelResult" class="text-2xl font-bold text-red-600 text-center min-h-[40px] mb-6 bg-white px-6 py-2 rounded-full shadow-md border border-gray-200 w-full max-w-md">
+        <div id="mainWheelResult"
+            class="text-2xl font-bold text-red-600 text-center min-h-[40px] mb-6 bg-white px-6 py-2 rounded-full shadow-md border border-gray-200 w-full max-w-md">
             พร้อมสุ่มแล้ว!
         </div>
 
         <div class="relative w-[350px] h-[350px] sm:w-[450px] sm:h-[450px]">
-            <div class="absolute -top-4 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[20px] border-l-transparent border-r-[20px] border-r-transparent border-t-[30px] border-t-black z-20 drop-shadow-md"></div>
-            
-            <div id="mainWheelContainer" class="w-full h-full rounded-full shadow-2xl transition-transform duration-[3500ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] border-8 border-white cursor-pointer relative overflow-hidden bg-gray-200">
-                </div>
-            
-            <button id="mainSpinBtn" onclick="spinMainWheel()" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full bg-white border-4 border-gray-800 text-gray-800 font-black text-xl z-20 shadow-[0_0_15px_rgba(0,0,0,0.3)] hover:bg-gray-100 hover:scale-105 transition-all active:scale-95">
+            <div
+                class="absolute -top-4 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[20px] border-l-transparent border-r-[20px] border-r-transparent border-t-[30px] border-t-black z-20 drop-shadow-md">
+            </div>
+
+            <div id="mainWheelContainer"
+                class="w-full h-full rounded-full shadow-2xl transition-transform duration-[3500ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] border-8 border-white cursor-pointer relative overflow-hidden bg-gray-200">
+            </div>
+
+            <button id="mainSpinBtn" onclick="spinMainWheel()"
+                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full bg-white border-4 border-gray-800 text-gray-800 font-black text-xl z-20 shadow-[0_0_15px_rgba(0,0,0,0.3)] hover:bg-gray-100 hover:scale-105 transition-all active:scale-95">
                 SPIN
             </button>
         </div>
@@ -1253,13 +1260,13 @@
                 // ย้ายไปยังบอร์ด
                 menu.children[1].onclick = () => {
                     const newItem = cell.cloneNode(true);
-                    newItem.className = `absolute z-30 w-${cellSize/2} h-${cellSize/2} disabled destroy-immediately`;
+                    newItem.className = `absolute z-30 w-${cellSize / 2} h-${cellSize / 2} disabled destroy-immediately`;
                     newItem.style.top = "100px";
                     newItem.style.left = "100px";
                     // ปรับขนาดให้เล็กลง
                     const imageElement = newItem.querySelector('img');
-                    imageElement.classList.replace(`w-${cellSize}`, `w-${cellSize/2}`);
-                    imageElement.classList.replace(`h-${cellSize}`, `h-${cellSize/2}`);
+                    imageElement.classList.replace(`w-${cellSize}`, `w-${cellSize / 2}`);
+                    imageElement.classList.replace(`h-${cellSize}`, `h-${cellSize / 2}`);
 
                     const description = cell.dataset.description || "";
                     bindItemContextMenu(newItem, index, description);
@@ -1286,8 +1293,8 @@
                     newItem.style.left = "100px";
                     // ปรับขนาดให้ปกติ
                     const imageElement = newItem.querySelector('img');
-                    imageElement.classList.replace(`w-${cellSize/2}`, `w-${cellSize}`);
-                    imageElement.classList.replace(`h-${cellSize/2}`, `h-${cellSize}`);
+                    imageElement.classList.replace(`w-${cellSize / 2}`, `w-${cellSize}`);
+                    imageElement.classList.replace(`h-${cellSize / 2}`, `h-${cellSize}`);
 
                     const description = cell.dataset.description || "";
                     bindItemContextMenu(newItem, index, description);
@@ -1435,7 +1442,7 @@
             btnPageChar.className = defaultClass;
             btnPageShop.className = defaultClass;
             btnPageWheel.className = defaultClass;
-            
+
             document.getElementById("game-board-space").classList.add("hidden");
             document.getElementById("character-space").classList.add("hidden");
             document.getElementById("shop-space").classList.add("hidden");
@@ -1706,7 +1713,7 @@
                 // สองช่องใหญ่ เน้นสีให้เด่นชัด
                 { text: "สุ่มวงล้อ Good", weight: 9, color: "#4ade80" },
                 { text: "สุ่มวงล้อ Bad", weight: 9, color: "#f87171" },
-                
+
                 // 20 ช่องเล็ก สลับ 5 สีพาสเทลเพื่อไม่ให้สีชนกันและดูสวยงาม
                 { text: "ถอยหลัง 1 ช่อง", weight: 1, color: "#fde047" },
                 { text: "เดินหน้า 1 ช่อง", weight: 1, color: "#7dd3fc" },
@@ -1759,7 +1766,7 @@
                 { text: "มอบไอเทม 1 ชิ้น", weight: 1, color: "#d6d3d1" },
                 { text: "เสียไอเทม 1 ชิ้น", weight: 1, color: "#c4b5fd" }
             ],
-            BOARD: (function() {
+            BOARD: (function () {
                 let arr = [];
                 const colors = ["#f87171", "#fb923c", "#fde047", "#86efac", "#93c5fd", "#c4b5fd", "#f9a8d4"]; // สลับสีพาสเทล 7 สี
                 let i = 1;
@@ -1776,7 +1783,32 @@
 
         function initMainWheel() {
             const type = document.getElementById('wheelSelector').value;
-            const data = allWheelData[type];
+            let data;
+
+            // ตรวจสอบว่าเป็นวงล้อสุ่มผู้เล่นหรือไม่
+            if (type === 'PLAYER') {
+                // ค้นหา Token ผู้เล่นทั้งหมดบนบอร์ดที่มี data-index
+                const playerTokens = document.querySelectorAll('#game-board [data-index]');
+                
+                if (playerTokens.length > 0) {
+                    const colors = ["#4ade80", "#6ee7b7", "#7dd3fc", "#d8b4fe"]; // สีพาสเทลสำหรับผู้เล่น 1-4
+                    
+                    // สร้างข้อมูลช่องตามจำนวนผู้เล่นที่หาเจอ
+                    data = Array.from(playerTokens).map((token, index) => {
+                        const pIndex = parseInt(token.dataset.index) + 1;
+                        return {
+                            text: `ผู้เล่น ${pIndex}`,
+                            weight: 1,
+                            color: colors[index % colors.length]
+                        };
+                    });
+                } else {
+                    data = [{ text: "ไม่มีผู้เล่น", weight: 1, color: "#d1d5db" }];
+                }
+            } else {
+                data = allWheelData[type];
+            }
+
             const wheel = document.getElementById('mainWheelContainer');
             wheel.innerHTML = ''; 
             document.getElementById('mainWheelResult').textContent = `วงล้อ ${type} พร้อมใช้งาน!`;
@@ -1797,20 +1829,22 @@
                 
                 const midAngle = startAngle + (sliceAngle / 2);
                 
-                // จัดการขนาดฟอนต์ให้เหมาะกับจำนวนช่อง
-                if (type === 'CHANCE' && item.weight === 1) {
+                // ปรับขนาดฟอนต์ (สำหรับผู้เล่นให้ตัวใหญ่หน่อยเพราะมีแค่สูงสุด 4 ช่อง)
+                if (type === 'PLAYER') {
+                    label.style.fontSize = '24px';
+                    label.textContent = item.text;
+                } else if (type === 'CHANCE' && item.weight === 1) {
                     label.style.fontSize = '8px'; 
                     label.textContent = item.text.substring(0, 15); 
                 } else if (type === 'BOARD') {
-                    label.style.fontSize = '12px'; // วงล้อกระดานฟอนต์ต้องเล็กลง
+                    label.style.fontSize = '12px';
                     label.textContent = item.text;
                 } else {
                     label.style.fontSize = type === 'GAMBLE' ? '24px' : '14px';
                     label.textContent = item.text;
                 }
 
-                // ขยับตัวอักษรให้ห่างจากศูนย์กลางมากขึ้น ถ้าเป็นวงล้อ BOARD ที่ช่องมันแคบ
-                let transX = type === 'BOARD' ? 85 : 55;
+                let transX = (type === 'BOARD' || type === 'PLAYER') ? 85 : 55;
 
                 label.style.transformOrigin = '0 50%';
                 label.style.transform = `translateY(-50%) rotate(${midAngle - 90}deg) translateX(${transX}px)`;
@@ -1819,34 +1853,50 @@
                 currentAngle += sliceAngle;
             });
 
+            // ปิดแอนิเมชันชั่วคราวตอนเปลี่ยนวงล้อ
+            wheel.style.transition = 'none'; 
             wheel.style.background = `conic-gradient(from 0deg, ${gradientParts.join(', ')})`;
             
             currentMainRot = 0;
-            // 1. ปิดแอนิเมชันชั่วคราว
-            wheel.style.transition = 'none'; 
+            wheel.style.transform = `rotate(0deg)`;
             
-            // 2. จับวงล้อหันกลับมาที่ 0 องศาแบบกระพริบตา
-            wheel.style.transform = `rotate(0deg)`; 
-            
-            // 3. บังคับให้หน้าเว็บอัปเดตการแสดงผลทันที (Force reflow)
             void wheel.offsetWidth; 
-            
-            // 4. ล้างค่าที่ปิดแอนิเมชันออก เพื่อให้คลาสของ Tailwind กลับมาทำงานเวลากดปุ่ม Spin
-            wheel.style.transition = '';
+            wheel.style.transition = ''; 
         }
 
         function spinMainWheel() {
             if (isMainWheelSpinning) return;
-            isMainWheelSpinning = true;
             
+            const type = document.getElementById('wheelSelector').value;
+            let data;
+
+            // ดึงข้อมูลผู้เล่นปัจจุบันจากบอร์ด
+            if (type === 'PLAYER') {
+                const playerTokens = document.querySelectorAll('#game-board [data-index]');
+                if (playerTokens.length > 0) {
+                    const colors = ["#4ade80", "#6ee7b7", "#7dd3fc", "#d8b4fe"];
+                    data = Array.from(playerTokens).map((token, index) => {
+                        const pIndex = parseInt(token.dataset.index) + 1;
+                        return {
+                            text: `ผู้เล่น ${pIndex}`,
+                            weight: 1,
+                            color: colors[index % colors.length]
+                        };
+                    });
+                } else {
+                    data = [{ text: "ไม่มีผู้เล่น", weight: 1, color: "#d1d5db" }];
+                }
+            } else {
+                data = allWheelData[type];
+            }
+
+            // ส่วนการคำนวณการหมุน (ใช้โค้ดเดิมของคุณได้เลย โดยเปลี่ยนไปใช้ตัวแปร data ที่เราดึงมาใหม่)
+            isMainWheelSpinning = true;
             const resultBox = document.getElementById('mainWheelResult');
             resultBox.innerHTML = '🎲 <i>กำลังสุ่ม...</i>';
             resultBox.classList.add("animate-pulse");
 
-            const type = document.getElementById('wheelSelector').value;
-            const data = allWheelData[type];
             const totalWeight = data.reduce((sum, item) => sum + item.weight, 0);
-
             const randomVal = Math.random() * totalWeight;
             let accumulated = 0;
             let winnerIndex = 0;
@@ -1862,17 +1912,17 @@
             const winner = data[winnerIndex];
 
             let startAngleOfWinner = 0;
-            for(let i=0; i < winnerIndex; i++) {
+            for (let i = 0; i < winnerIndex; i++) {
                 startAngleOfWinner += (data[i].weight / totalWeight) * 360;
             }
             const sliceAngle = (winner.weight / totalWeight) * 360;
-            
-            const randomJitter = (Math.random() * sliceAngle * 0.8) + (sliceAngle * 0.1); 
+
+            const randomJitter = (Math.random() * sliceAngle * 0.8) + (sliceAngle * 0.1);
             const stopAngle = startAngleOfWinner + randomJitter;
 
-            const spins = (Math.floor(Math.random() * 3) + 5) * 360; 
+            const spins = (Math.floor(Math.random() * 3) + 5) * 360;
             const currentMod = currentMainRot % 360;
-            
+
             const targetRotation = currentMainRot + spins + ((360 - stopAngle) - currentMod + 360) % 360;
 
             const wheel = document.getElementById('mainWheelContainer');
@@ -1881,7 +1931,7 @@
 
             setTimeout(() => {
                 resultBox.classList.remove("animate-pulse");
-                resultBox.innerHTML = `🎉 ได้รับ: <b class="text-red-600">${winner.text}</b> 🎉`;
+                resultBox.innerHTML = `🎉 ผลลัพธ์: <b class="text-red-600">${winner.text}</b> 🎉`;
                 isMainWheelSpinning = false;
             }, 3500);
         }
