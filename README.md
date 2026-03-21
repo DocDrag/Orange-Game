@@ -29,6 +29,4 @@
 
 หรือลองเล่น online ได้ที่ 👉 [Orange Game](https://docdrag.github.io/Orange-Game/)
 
-สามารถใช้เว็บวงล้อสุ่ม [wheelofnames](https://wheelofnames.com/th) เพื่อนำข้อมูลการสุ่มที่เตรียมไว้แล้วไปใช้ได้
-
 ---
