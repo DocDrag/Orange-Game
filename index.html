@@ -13,28 +13,28 @@
 <body class="bg-gray-100 min-h-screen flex flex-col items-center p-6 pt-10">
 
     <!-- Navbar ด้านบนสุดของหน้า -->
-    <nav class="w-full flex items-center justify-between px-6 py-3 bg-white shadow mb-6 fixed top-0 left-0 z-50">
+    <nav class="w-full flex items-center justify-between px-6 py-3 bg-white shadow-sm mb-6 fixed top-0 left-0 z-50 border-b border-gray-100">
         <!-- โลโก้รูปส้ม (ใช้ emoji) -->
         <div class="flex items-center gap-2">
             <span class="text-3xl">🍊</span>
-            <span class="font-bold text-xl text-orange-600">เกมส้ม</span>
+            <span class="font-black text-xl text-orange-600 tracking-wide">เกมส้ม</span>
         </div>
         <!-- ปุ่มด้านขวา: credit และ Save/Load -->
         <div class="flex items-center gap-2">
             <button id="saveBtn"
-                class="bg-green-500 hover:bg-green-600 text-white font-semibold px-4 py-2 rounded shadow transition">Save</button>
+                class="bg-green-500 hover:bg-green-600 text-white font-semibold px-5 py-2 rounded-lg shadow-sm transition active:scale-95">Save</button>
             <label for="loadFile"
-                class="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded shadow transition cursor-pointer">
+                class="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-5 py-2 rounded-lg shadow-sm transition cursor-pointer active:scale-95">
                 Load
                 <input type="file" id="loadFile" accept=".json" class="hidden" />
             </label>
             <a href="https://www.youtube.com/live/TTaur_JfrCs?si=K-lf_ghMbp22_hwj" target="_blank"
-                class="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-4 py-2 rounded shadow transition">
+                class="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-5 py-2 rounded-lg shadow-sm transition active:scale-95">
                 Credit
             </a>
         </div>
     </nav>
-
+    
     <!-- Sidebar ด้านซ้าย -->
     <aside id="sidebar"
         class="fixed top-16 left-0 w-72 h-full bg-white/90 backdrop-blur-2xl shadow-[15px_0_30px_rgba(0,0,0,0.04)] z-40 flex flex-col p-6 gap-3 border-r border-white/50 transform -translate-x-full transition-transform duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]">
