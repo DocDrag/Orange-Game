@@ -151,131 +151,208 @@
     </div>
 
     <!-- character-space -->
-    <div id="character-space" class="hidden pt-14 px-4 w-full h-screen grid grid-cols-4 gap-4 max-w-8xl mx-auto">
+    <style>
+        .player-card { border-top-color: var(--player-color, #f97316); }
+        .player-card:hover { box-shadow: 0 20px 40px rgba(0,0,0,0.12); }
+        .player-gradient { background: linear-gradient(to bottom left, var(--player-color, #f97316), transparent); }
+        .player-pulse { background-color: var(--player-color, #f97316); }
+        .player-img { border-color: var(--player-color, #f97316) !important; }
+        .inventory-slot:hover {
+            color: var(--player-color, #f97316);
+            border-color: var(--player-color, #f97316);
+            background-color: #f9fafb;
+        }
+    </style>
+    <div id="character-space" class="hidden pt-20 px-6 pb-12 w-full min-h-screen grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 lg:gap-8 max-w-[100rem] mx-auto">
+        
         <!-- ตัวละครผู้เล่น 1 -->
-        <div class="flex flex-col items-center bg-white rounded-2xl shadow-lg px-4 py-6 space-y-4">
-            <img src="" class="w-24 h-24 rounded-full border-4 border-orange-400 object-cover shadow mb-2" />
-            <div class="text-center space-y-3 w-full">
-                <!-- GOLD Section -->
-                <div class="bg-yellow-100 rounded-xl p-4 shadow-inner">
-                    <div class="flex items-center justify-center gap-2">
-                        <button
-                            class="gold-minus bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-full text-sm font-bold">-</button>
-                        <div class="font-bold text-yellow-600 text-lg">GOLD: <span class="gold-count">0</span></div>
-                        <button
-                            class="gold-plus bg-green-500 hover:bg-green-600 text-white w-8 h-8 rounded-full text-sm font-bold">+</button>
-                    </div>
+        <div class="player-card flex flex-col items-center bg-white rounded-[2rem] shadow-2xl p-6 relative overflow-hidden border-t-8 transform transition-transform hover:-translate-y-2">
+            <div class="player-gradient absolute top-0 right-0 w-32 h-32 rounded-bl-full z-0 opacity-40 pointer-events-none"></div>
+            
+            <div class="relative z-10 w-full flex flex-col items-center h-full">
+                <div class="relative mb-6 mt-2">
+                    <div class="player-pulse absolute inset-0 rounded-full blur-md opacity-20 animate-[pulse_3s_ease-in-out_infinite]"></div>
+                    <img src="" class="player-img w-28 h-28 rounded-full border-[5px] object-cover shadow-lg relative z-10 transition-transform duration-300 hover:scale-110 bg-white" data-index="0" />
+                    <span class="absolute -bottom-3 bg-gray-900 text-white text-xs font-black px-4 py-1.5 rounded-full border-2 border-white shadow-md left-1/2 -translate-x-1/2 z-20 whitespace-nowrap tracking-widest uppercase">Player 1</span>
                 </div>
-                <!-- Orange Section -->
-                <div class="bg-orange-100 rounded-xl p-4 shadow-inner">
-                    <div class="flex items-center justify-center gap-2">
-                        <button
-                            class="orange-minus bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-full text-sm font-bold">-</button>
-                        <div class="text-orange-600 text-md font-semibold">ส้ม: <span class="orange-count">0</span>
+                
+                <div class="w-full space-y-4 flex-grow flex flex-col mt-2">
+                    <div class="grid grid-cols-2 gap-3">
+                        <!-- GOLD Section -->
+                        <div class="bg-gradient-to-br from-yellow-50 to-yellow-100/80 rounded-2xl p-3 shadow-sm border border-yellow-200/60 flex flex-col items-center">
+                            <span class="text-[9px] font-black text-yellow-600 uppercase tracking-widest flex items-center gap-1 mb-2"><i class="fas fa-coins text-yellow-500"></i> GOLD</span>
+                            <div class="flex items-center justify-between w-full px-1">
+                                <button class="gold-minus bg-white hover:bg-red-50 text-red-500 border border-red-100 w-8 h-8 rounded-full text-sm font-black shadow-[0_2px_8px_rgba(0,0,0,0.06)] transition-all hover:scale-110 active:scale-95 flex items-center justify-center"><i class="fas fa-minus"></i></button>
+                                <div class="font-black text-gray-800 text-2xl text-center leading-none"><span class="gold-count">0</span></div>
+                                <button class="gold-plus bg-gradient-to-b from-yellow-400 to-yellow-500 hover:from-yellow-300 hover:to-yellow-400 text-white shadow-[0_4px_12px_rgba(234,179,8,0.4)] border border-yellow-500/50 w-8 h-8 rounded-full text-sm font-black transition-all hover:scale-110 hover:-translate-y-0.5 active:scale-95 flex items-center justify-center"><i class="fas fa-plus"></i></button>
+                            </div>
                         </div>
-                        <button
-                            class="orange-plus bg-green-500 hover:bg-green-600 text-white w-8 h-8 rounded-full text-sm font-bold">+</button>
+
+                        <!-- Orange Section -->
+                        <div class="bg-gradient-to-br from-orange-50 to-orange-100/80 rounded-2xl p-3 shadow-sm border border-orange-200/60 flex flex-col items-center">
+                            <span class="text-[9px] font-black text-orange-600 uppercase tracking-widest flex items-center gap-1 mb-2"><span class="text-xs">🍊</span> ORANGE</span>
+                            <div class="flex items-center justify-between w-full px-1">
+                                <button class="orange-minus bg-white hover:bg-red-50 text-red-500 border border-red-100 w-8 h-8 rounded-full text-sm font-black shadow-[0_2px_8px_rgba(0,0,0,0.06)] transition-all hover:scale-110 active:scale-95 flex items-center justify-center"><i class="fas fa-minus"></i></button>
+                                <div class="font-black text-gray-800 text-2xl text-center leading-none"><span class="orange-count">0</span></div>
+                                <button class="orange-plus bg-gradient-to-b from-orange-400 to-orange-500 hover:from-orange-300 hover:to-orange-400 text-white shadow-[0_4px_12px_rgba(249,115,22,0.4)] border border-orange-500/50 w-8 h-8 rounded-full text-sm font-black transition-all hover:scale-110 hover:-translate-y-0.5 active:scale-95 flex items-center justify-center"><i class="fas fa-plus"></i></button>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <!-- ช่องเก็บของ -->
-                <div class="grid grid-cols-2 gap-2 mt-2">
-                    <div class="aspect-square bg-gray-200 rounded shadow-inner w-full"></div>
-                    <div class="aspect-square bg-gray-200 rounded shadow-inner w-full"></div>
-                    <div class="aspect-square bg-gray-200 rounded shadow-inner w-full"></div>
-                    <div class="aspect-square bg-gray-200 rounded shadow-inner w-full"></div>
+
+                    <!-- ช่องเก็บของ -->
+                    <div class="bg-gray-50/80 rounded-2xl p-4 border border-gray-100 shadow-inner mt-auto flex-grow flex flex-col">
+                        <span class="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-3 block text-center"><i class="fas fa-box-open mr-1"></i> INVENTORY</span>
+                        <div class="grid grid-cols-2 gap-3 flex-grow">
+                            <div class="inventory-slot aspect-square bg-white rounded-2xl shadow-sm border border-gray-200 flex items-center justify-center text-gray-200 text-3xl transition-all cursor-pointer"><i class="fas fa-plus"></i></div>
+                            <div class="inventory-slot aspect-square bg-white rounded-2xl shadow-sm border border-gray-200 flex items-center justify-center text-gray-200 text-3xl transition-all cursor-pointer"><i class="fas fa-plus"></i></div>
+                            <div class="inventory-slot aspect-square bg-white rounded-2xl shadow-sm border border-gray-200 flex items-center justify-center text-gray-200 text-3xl transition-all cursor-pointer"><i class="fas fa-plus"></i></div>
+                            <div class="inventory-slot aspect-square bg-white rounded-2xl shadow-sm border border-gray-200 flex items-center justify-center text-gray-200 text-3xl transition-all cursor-pointer"><i class="fas fa-plus"></i></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+
         <!-- ตัวละครผู้เล่น 2 -->
-        <div class="flex flex-col items-center bg-gray-100 rounded-2xl shadow-lg px-4 py-6 space-y-4">
-            <img src="" class="w-24 h-24 rounded-full border-4 border-orange-400 object-cover shadow mb-2" />
-            <div class="text-center space-y-3 w-full">
-                <div class="bg-yellow-100 rounded-xl p-4 shadow-inner">
-                    <div class="flex items-center justify-center gap-2">
-                        <button
-                            class="gold-minus bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-full text-sm font-bold">-</button>
-                        <div class="font-bold text-yellow-600 text-lg">GOLD: <span class="gold-count">0</span></div>
-                        <button
-                            class="gold-plus bg-green-500 hover:bg-green-600 text-white w-8 h-8 rounded-full text-sm font-bold">+</button>
-                    </div>
+        <div class="player-card flex flex-col items-center bg-zinc-50 rounded-[2rem] shadow-2xl p-6 relative overflow-hidden border-t-8 transform transition-transform hover:-translate-y-2">
+            <div class="player-gradient absolute top-0 right-0 w-32 h-32 rounded-bl-full z-0 opacity-40 pointer-events-none"></div>
+            
+            <div class="relative z-10 w-full flex flex-col items-center h-full">
+                <div class="relative mb-6 mt-2">
+                    <div class="player-pulse absolute inset-0 rounded-full blur-md opacity-20 animate-[pulse_3.5s_ease-in-out_infinite]"></div>
+                    <img src="" class="player-img w-28 h-28 rounded-full border-[5px] object-cover shadow-lg relative z-10 transition-transform duration-300 hover:scale-110 bg-white" data-index="1" />
+                    <span class="absolute -bottom-3 bg-gray-900 text-white text-xs font-black px-4 py-1.5 rounded-full border-2 border-white shadow-md left-1/2 -translate-x-1/2 z-20 whitespace-nowrap tracking-widest uppercase">Player 2</span>
                 </div>
-                <div class="bg-orange-100 rounded-xl p-4 shadow-inner">
-                    <div class="flex items-center justify-center gap-2">
-                        <button
-                            class="orange-minus bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-full text-sm font-bold">-</button>
-                        <div class="text-orange-600 text-md font-semibold">ส้ม: <span class="orange-count">0</span>
+                
+                <div class="w-full space-y-4 flex-grow flex flex-col mt-2">
+                    <div class="grid grid-cols-2 gap-3">
+                        <!-- GOLD Section -->
+                        <div class="bg-gradient-to-br from-yellow-50 to-yellow-100/80 rounded-2xl p-3 shadow-sm border border-yellow-200/60 flex flex-col items-center">
+                            <span class="text-[9px] font-black text-yellow-600 uppercase tracking-widest flex items-center gap-1 mb-2"><i class="fas fa-coins text-yellow-500"></i> GOLD</span>
+                            <div class="flex items-center justify-between w-full px-1">
+                                <button class="gold-minus bg-white hover:bg-red-50 text-red-500 border border-red-100 w-8 h-8 rounded-full text-sm font-black shadow-[0_2px_8px_rgba(0,0,0,0.06)] transition-all hover:scale-110 active:scale-95 flex items-center justify-center"><i class="fas fa-minus"></i></button>
+                                <div class="font-black text-gray-800 text-2xl text-center leading-none"><span class="gold-count">0</span></div>
+                                <button class="gold-plus bg-gradient-to-b from-yellow-400 to-yellow-500 hover:from-yellow-300 hover:to-yellow-400 text-white shadow-[0_4px_12px_rgba(234,179,8,0.4)] border border-yellow-500/50 w-8 h-8 rounded-full text-sm font-black transition-all hover:scale-110 hover:-translate-y-0.5 active:scale-95 flex items-center justify-center"><i class="fas fa-plus"></i></button>
+                            </div>
                         </div>
-                        <button
-                            class="orange-plus bg-green-500 hover:bg-green-600 text-white w-8 h-8 rounded-full text-sm font-bold">+</button>
+
+                        <!-- Orange Section -->
+                        <div class="bg-gradient-to-br from-orange-50 to-orange-100/80 rounded-2xl p-3 shadow-sm border border-orange-200/60 flex flex-col items-center">
+                            <span class="text-[9px] font-black text-orange-600 uppercase tracking-widest flex items-center gap-1 mb-2"><span class="text-xs">🍊</span> ORANGE</span>
+                            <div class="flex items-center justify-between w-full px-1">
+                                <button class="orange-minus bg-white hover:bg-red-50 text-red-500 border border-red-100 w-8 h-8 rounded-full text-sm font-black shadow-[0_2px_8px_rgba(0,0,0,0.06)] transition-all hover:scale-110 active:scale-95 flex items-center justify-center"><i class="fas fa-minus"></i></button>
+                                <div class="font-black text-gray-800 text-2xl text-center leading-none"><span class="orange-count">0</span></div>
+                                <button class="orange-plus bg-gradient-to-b from-orange-400 to-orange-500 hover:from-orange-300 hover:to-orange-400 text-white shadow-[0_4px_12px_rgba(249,115,22,0.4)] border border-orange-500/50 w-8 h-8 rounded-full text-sm font-black transition-all hover:scale-110 hover:-translate-y-0.5 active:scale-95 flex items-center justify-center"><i class="fas fa-plus"></i></button>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="grid grid-cols-2 gap-2 mt-2">
-                    <div class="aspect-square bg-gray-200 rounded shadow-inner w-full"></div>
-                    <div class="aspect-square bg-gray-200 rounded shadow-inner w-full"></div>
-                    <div class="aspect-square bg-gray-200 rounded shadow-inner w-full"></div>
-                    <div class="aspect-square bg-gray-200 rounded shadow-inner w-full"></div>
+
+                    <!-- ช่องเก็บของ -->
+                    <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-inner mt-auto flex-grow flex flex-col">
+                        <span class="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-3 block text-center"><i class="fas fa-box-open mr-1"></i> INVENTORY</span>
+                        <div class="grid grid-cols-2 gap-3 flex-grow">
+                            <div class="inventory-slot aspect-square bg-zinc-50 rounded-2xl shadow-sm border border-gray-200 flex items-center justify-center text-gray-200 text-3xl transition-all cursor-pointer"><i class="fas fa-plus"></i></div>
+                            <div class="inventory-slot aspect-square bg-zinc-50 rounded-2xl shadow-sm border border-gray-200 flex items-center justify-center text-gray-200 text-3xl transition-all cursor-pointer"><i class="fas fa-plus"></i></div>
+                            <div class="inventory-slot aspect-square bg-zinc-50 rounded-2xl shadow-sm border border-gray-200 flex items-center justify-center text-gray-200 text-3xl transition-all cursor-pointer"><i class="fas fa-plus"></i></div>
+                            <div class="inventory-slot aspect-square bg-zinc-50 rounded-2xl shadow-sm border border-gray-200 flex items-center justify-center text-gray-200 text-3xl transition-all cursor-pointer"><i class="fas fa-plus"></i></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+
         <!-- ตัวละครผู้เล่น 3 -->
-        <div class="flex flex-col items-center bg-white rounded-2xl shadow-lg px-4 py-6 space-y-4">
-            <img src="" class="w-24 h-24 rounded-full border-4 border-orange-400 object-cover shadow mb-2" />
-            <div class="text-center space-y-3 w-full">
-                <div class="bg-yellow-100 rounded-xl p-4 shadow-inner">
-                    <div class="flex items-center justify-center gap-2">
-                        <button
-                            class="gold-minus bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-full text-sm font-bold">-</button>
-                        <div class="font-bold text-yellow-600 text-lg">GOLD: <span class="gold-count">0</span></div>
-                        <button
-                            class="gold-plus bg-green-500 hover:bg-green-600 text-white w-8 h-8 rounded-full text-sm font-bold">+</button>
-                    </div>
+        <div class="player-card flex flex-col items-center bg-white rounded-[2rem] shadow-2xl p-6 relative overflow-hidden border-t-8 transform transition-transform hover:-translate-y-2">
+            <div class="player-gradient absolute top-0 right-0 w-32 h-32 rounded-bl-full z-0 opacity-40 pointer-events-none"></div>
+            
+            <div class="relative z-10 w-full flex flex-col items-center h-full">
+                <div class="relative mb-6 mt-2">
+                    <div class="player-pulse absolute inset-0 rounded-full blur-md opacity-20 animate-[pulse_4s_ease-in-out_infinite]"></div>
+                    <img src="" class="player-img w-28 h-28 rounded-full border-[5px] object-cover shadow-lg relative z-10 transition-transform duration-300 hover:scale-110 bg-white" data-index="2" />
+                    <span class="absolute -bottom-3 bg-gray-900 text-white text-xs font-black px-4 py-1.5 rounded-full border-2 border-white shadow-md left-1/2 -translate-x-1/2 z-20 whitespace-nowrap tracking-widest uppercase">Player 3</span>
                 </div>
-                <div class="bg-orange-100 rounded-xl p-4 shadow-inner">
-                    <div class="flex items-center justify-center gap-2">
-                        <button
-                            class="orange-minus bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-full text-sm font-bold">-</button>
-                        <div class="text-orange-600 text-md font-semibold">ส้ม: <span class="orange-count">0</span>
+                
+                <div class="w-full space-y-4 flex-grow flex flex-col mt-2">
+                    <div class="grid grid-cols-2 gap-3">
+                        <!-- GOLD Section -->
+                        <div class="bg-gradient-to-br from-yellow-50 to-yellow-100/80 rounded-2xl p-3 shadow-sm border border-yellow-200/60 flex flex-col items-center">
+                            <span class="text-[9px] font-black text-yellow-600 uppercase tracking-widest flex items-center gap-1 mb-2"><i class="fas fa-coins text-yellow-500"></i> GOLD</span>
+                            <div class="flex items-center justify-between w-full px-1">
+                                <button class="gold-minus bg-white hover:bg-red-50 text-red-500 border border-red-100 w-8 h-8 rounded-full text-sm font-black shadow-[0_2px_8px_rgba(0,0,0,0.06)] transition-all hover:scale-110 active:scale-95 flex items-center justify-center"><i class="fas fa-minus"></i></button>
+                                <div class="font-black text-gray-800 text-2xl text-center leading-none"><span class="gold-count">0</span></div>
+                                <button class="gold-plus bg-gradient-to-b from-yellow-400 to-yellow-500 hover:from-yellow-300 hover:to-yellow-400 text-white shadow-[0_4px_12px_rgba(234,179,8,0.4)] border border-yellow-500/50 w-8 h-8 rounded-full text-sm font-black transition-all hover:scale-110 hover:-translate-y-0.5 active:scale-95 flex items-center justify-center"><i class="fas fa-plus"></i></button>
+                            </div>
                         </div>
-                        <button
-                            class="orange-plus bg-green-500 hover:bg-green-600 text-white w-8 h-8 rounded-full text-sm font-bold">+</button>
+
+                        <!-- Orange Section -->
+                        <div class="bg-gradient-to-br from-orange-50 to-orange-100/80 rounded-2xl p-3 shadow-sm border border-orange-200/60 flex flex-col items-center">
+                            <span class="text-[9px] font-black text-orange-600 uppercase tracking-widest flex items-center gap-1 mb-2"><span class="text-xs">🍊</span> ORANGE</span>
+                            <div class="flex items-center justify-between w-full px-1">
+                                <button class="orange-minus bg-white hover:bg-red-50 text-red-500 border border-red-100 w-8 h-8 rounded-full text-sm font-black shadow-[0_2px_8px_rgba(0,0,0,0.06)] transition-all hover:scale-110 active:scale-95 flex items-center justify-center"><i class="fas fa-minus"></i></button>
+                                <div class="font-black text-gray-800 text-2xl text-center leading-none"><span class="orange-count">0</span></div>
+                                <button class="orange-plus bg-gradient-to-b from-orange-400 to-orange-500 hover:from-orange-300 hover:to-orange-400 text-white shadow-[0_4px_12px_rgba(249,115,22,0.4)] border border-orange-500/50 w-8 h-8 rounded-full text-sm font-black transition-all hover:scale-110 hover:-translate-y-0.5 active:scale-95 flex items-center justify-center"><i class="fas fa-plus"></i></button>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="grid grid-cols-2 gap-2 mt-2">
-                    <div class="aspect-square bg-gray-200 rounded shadow-inner w-full"></div>
-                    <div class="aspect-square bg-gray-200 rounded shadow-inner w-full"></div>
-                    <div class="aspect-square bg-gray-200 rounded shadow-inner w-full"></div>
-                    <div class="aspect-square bg-gray-200 rounded shadow-inner w-full"></div>
+
+                    <!-- ช่องเก็บของ -->
+                    <div class="bg-gray-50/80 rounded-2xl p-4 border border-gray-100 shadow-inner mt-auto flex-grow flex flex-col">
+                        <span class="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-3 block text-center"><i class="fas fa-box-open mr-1"></i> INVENTORY</span>
+                        <div class="grid grid-cols-2 gap-3 flex-grow">
+                            <div class="inventory-slot aspect-square bg-white rounded-2xl shadow-sm border border-gray-200 flex items-center justify-center text-gray-200 text-3xl transition-all cursor-pointer"><i class="fas fa-plus"></i></div>
+                            <div class="inventory-slot aspect-square bg-white rounded-2xl shadow-sm border border-gray-200 flex items-center justify-center text-gray-200 text-3xl transition-all cursor-pointer"><i class="fas fa-plus"></i></div>
+                            <div class="inventory-slot aspect-square bg-white rounded-2xl shadow-sm border border-gray-200 flex items-center justify-center text-gray-200 text-3xl transition-all cursor-pointer"><i class="fas fa-plus"></i></div>
+                            <div class="inventory-slot aspect-square bg-white rounded-2xl shadow-sm border border-gray-200 flex items-center justify-center text-gray-200 text-3xl transition-all cursor-pointer"><i class="fas fa-plus"></i></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+
         <!-- ตัวละครผู้เล่น 4 -->
-        <div class="flex flex-col items-center bg-gray-100 rounded-2xl shadow-lg px-4 py-6 space-y-4">
-            <img src="" class="w-24 h-24 rounded-full border-4 border-orange-400 object-cover shadow mb-2" />
-            <div class="text-center space-y-3 w-full">
-                <div class="bg-yellow-100 rounded-xl p-4 shadow-inner">
-                    <div class="flex items-center justify-center gap-2">
-                        <button
-                            class="gold-minus bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-full text-sm font-bold">-</button>
-                        <div class="font-bold text-yellow-600 text-lg">GOLD: <span class="gold-count">0</span></div>
-                        <button
-                            class="gold-plus bg-green-500 hover:bg-green-600 text-white w-8 h-8 rounded-full text-sm font-bold">+</button>
-                    </div>
+        <div class="player-card flex flex-col items-center bg-zinc-50 rounded-[2rem] shadow-2xl p-6 relative overflow-hidden border-t-8 transform transition-transform hover:-translate-y-2">
+            <div class="player-gradient absolute top-0 right-0 w-32 h-32 rounded-bl-full z-0 opacity-40 pointer-events-none"></div>
+            
+            <div class="relative z-10 w-full flex flex-col items-center h-full">
+                <div class="relative mb-6 mt-2">
+                    <div class="player-pulse absolute inset-0 rounded-full blur-md opacity-20 animate-[pulse_2.5s_ease-in-out_infinite]"></div>
+                    <img src="" class="player-img w-28 h-28 rounded-full border-[5px] object-cover shadow-lg relative z-10 transition-transform duration-300 hover:scale-110 bg-white" data-index="3" />
+                    <span class="absolute -bottom-3 bg-gray-900 text-white text-xs font-black px-4 py-1.5 rounded-full border-2 border-white shadow-md left-1/2 -translate-x-1/2 z-20 whitespace-nowrap tracking-widest uppercase">Player 4</span>
                 </div>
-                <div class="bg-orange-100 rounded-xl p-4 shadow-inner">
-                    <div class="flex items-center justify-center gap-2">
-                        <button
-                            class="orange-minus bg-red-500 hover:bg-red-600 text-white w-8 h-8 rounded-full text-sm font-bold">-</button>
-                        <div class="text-orange-600 text-md font-semibold">ส้ม: <span class="orange-count">0</span>
+                
+                <div class="w-full space-y-4 flex-grow flex flex-col mt-2">
+                    <div class="grid grid-cols-2 gap-3">
+                        <!-- GOLD Section -->
+                        <div class="bg-gradient-to-br from-yellow-50 to-yellow-100/80 rounded-2xl p-3 shadow-sm border border-yellow-200/60 flex flex-col items-center">
+                            <span class="text-[9px] font-black text-yellow-600 uppercase tracking-widest flex items-center gap-1 mb-2"><i class="fas fa-coins text-yellow-500"></i> GOLD</span>
+                            <div class="flex items-center justify-between w-full px-1">
+                                <button class="gold-minus bg-white hover:bg-red-50 text-red-500 border border-red-100 w-8 h-8 rounded-full text-sm font-black shadow-[0_2px_8px_rgba(0,0,0,0.06)] transition-all hover:scale-110 active:scale-95 flex items-center justify-center"><i class="fas fa-minus"></i></button>
+                                <div class="font-black text-gray-800 text-2xl text-center leading-none"><span class="gold-count">0</span></div>
+                                <button class="gold-plus bg-gradient-to-b from-yellow-400 to-yellow-500 hover:from-yellow-300 hover:to-yellow-400 text-white shadow-[0_4px_12px_rgba(234,179,8,0.4)] border border-yellow-500/50 w-8 h-8 rounded-full text-sm font-black transition-all hover:scale-110 hover:-translate-y-0.5 active:scale-95 flex items-center justify-center"><i class="fas fa-plus"></i></button>
+                            </div>
                         </div>
-                        <button
-                            class="orange-plus bg-green-500 hover:bg-green-600 text-white w-8 h-8 rounded-full text-sm font-bold">+</button>
+
+                        <!-- Orange Section -->
+                        <div class="bg-gradient-to-br from-orange-50 to-orange-100/80 rounded-2xl p-3 shadow-sm border border-orange-200/60 flex flex-col items-center">
+                            <span class="text-[9px] font-black text-orange-600 uppercase tracking-widest flex items-center gap-1 mb-2"><span class="text-xs">🍊</span> ORANGE</span>
+                            <div class="flex items-center justify-between w-full px-1">
+                                <button class="orange-minus bg-white hover:bg-red-50 text-red-500 border border-red-100 w-8 h-8 rounded-full text-sm font-black shadow-[0_2px_8px_rgba(0,0,0,0.06)] transition-all hover:scale-110 active:scale-95 flex items-center justify-center"><i class="fas fa-minus"></i></button>
+                                <div class="font-black text-gray-800 text-2xl text-center leading-none"><span class="orange-count">0</span></div>
+                                <button class="orange-plus bg-gradient-to-b from-orange-400 to-orange-500 hover:from-orange-300 hover:to-orange-400 text-white shadow-[0_4px_12px_rgba(249,115,22,0.4)] border border-orange-500/50 w-8 h-8 rounded-full text-sm font-black transition-all hover:scale-110 hover:-translate-y-0.5 active:scale-95 flex items-center justify-center"><i class="fas fa-plus"></i></button>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="grid grid-cols-2 gap-2 mt-2">
-                    <div class="aspect-square bg-gray-200 rounded shadow-inner w-full"></div>
-                    <div class="aspect-square bg-gray-200 rounded shadow-inner w-full"></div>
-                    <div class="aspect-square bg-gray-200 rounded shadow-inner w-full"></div>
-                    <div class="aspect-square bg-gray-200 rounded shadow-inner w-full"></div>
+
+                    <!-- ช่องเก็บของ -->
+                    <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-inner mt-auto flex-grow flex flex-col">
+                        <span class="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-3 block text-center"><i class="fas fa-box-open mr-1"></i> INVENTORY</span>
+                        <div class="grid grid-cols-2 gap-3 flex-grow">
+                            <div class="inventory-slot aspect-square bg-zinc-50 rounded-2xl shadow-sm border border-gray-200 flex items-center justify-center text-gray-200 text-3xl transition-all cursor-pointer"><i class="fas fa-plus"></i></div>
+                            <div class="inventory-slot aspect-square bg-zinc-50 rounded-2xl shadow-sm border border-gray-200 flex items-center justify-center text-gray-200 text-3xl transition-all cursor-pointer"><i class="fas fa-plus"></i></div>
+                            <div class="inventory-slot aspect-square bg-zinc-50 rounded-2xl shadow-sm border border-gray-200 flex items-center justify-center text-gray-200 text-3xl transition-all cursor-pointer"><i class="fas fa-plus"></i></div>
+                            <div class="inventory-slot aspect-square bg-zinc-50 rounded-2xl shadow-sm border border-gray-200 flex items-center justify-center text-gray-200 text-3xl transition-all cursor-pointer"><i class="fas fa-plus"></i></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -393,108 +470,138 @@
     </div>
 
     <!-- Modal สำหรับเพิ่มผู้เล่น -->
-    <div id="player-modal-bg" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
-        <div class="bg-white rounded-lg shadow-lg p-6 w-120 relative">
-            <h2 class="text-lg font-bold mb-4 text-orange-600">เพิ่มผู้เล่น</h2>
-            <form id="player-form" class="flex flex-col gap-4">
+    <div id="player-modal-bg" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 hidden transition-opacity">
+        <div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-md relative overflow-hidden border-t-8 border-orange-500 transform transition-transform">
+            <div class="flex items-center gap-4 mb-6">
+                <div class="w-14 h-14 rounded-full bg-orange-100 flex items-center justify-center text-orange-500 text-3xl shadow-inner">
+                    <i class="fas fa-user-plus"></i>
+                </div>
                 <div>
-                    <label class="block text-sm font-medium mb-1">เลือกประเภทไอคอน</label>
-                    <div class="flex gap-3">
-                        <label class="flex items-center gap-1">
-                            <input type="radio" name="icon-type" value="url" checked>
+                    <h2 class="text-2xl font-black text-gray-800 tracking-wide">เพิ่มผู้เล่น</h2>
+                    <p class="text-sm text-gray-500 mt-1">สร้างผู้เล่นใหม่ลงกระดาน</p>
+                </div>
+            </div>
+
+            <form id="player-form" class="flex flex-col gap-5">
+                <div class="bg-gray-50 p-4 rounded-2xl border-2 border-gray-100">
+                    <label class="block text-sm font-bold text-gray-700 mb-3">เลือกประเภทไอคอน</label>
+                    <div class="flex flex-wrap gap-4">
+                        <label class="flex items-center gap-2 cursor-pointer font-medium text-gray-700 hover:text-orange-600 transition-colors">
+                            <input type="radio" name="icon-type" value="url" checked class="w-5 h-5 accent-orange-500 cursor-pointer">
                             URL รูปภาพ
                         </label>
-                        <label class="flex items-center gap-1">
-                            <input type="radio" name="icon-type" value="text">
+                        <label class="flex items-center gap-2 cursor-pointer font-medium text-gray-700 hover:text-orange-600 transition-colors">
+                            <input type="radio" name="icon-type" value="text" class="w-5 h-5 accent-orange-500 cursor-pointer">
                             อิโมจิ / ข้อความ
                         </label>
-                        <label class="flex items-center gap-1">
-                            <input type="radio" name="icon-type" value="upload">
-                            อัปโหลดไฟล์
+                        <label class="flex items-center gap-2 cursor-pointer font-medium text-gray-700 hover:text-orange-600 transition-colors">
+                            <input type="radio" name="icon-type" value="upload" class="w-5 h-5 accent-orange-500 cursor-pointer">
+                            อัปโหลดรูป
                         </label>
                     </div>
                 </div>
 
                 <div id="url-input-wrapper">
-                    <label class="block text-sm font-medium mb-1 mt-2">ลิงก์รูปภาพผู้เล่น</label>
-                    <input type="url" id="player-img" class="w-full border rounded px-2 py-1" placeholder="https://...">
+                    <label class="block text-sm font-bold text-gray-700 mb-2">ลิงก์รูปภาพผู้เล่น</label>
+                    <input type="url" id="player-img" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-orange-400 focus:ring-4 focus:ring-orange-100 placeholder-gray-400 font-medium transition-all" placeholder="https://example.com/image.png">
                 </div>
 
                 <div id="text-input-wrapper" class="hidden">
-                    <label class="block text-sm font-medium mb-1 mt-2">อิโมจิ หรือ ข้อความ</label>
-                    <input type="text" id="player-text" maxlength="3" class="w-full border rounded px-2 py-1"
-                        placeholder="🍉 หรือ A">
+                    <label class="block text-sm font-bold text-gray-700 mb-2">อิโมจิ หรือ ข้อความ</label>
+                    <input type="text" id="player-text" maxlength="3" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-orange-400 focus:ring-4 focus:ring-orange-100 placeholder-gray-400 font-medium text-center text-xl transition-all"
+                        placeholder="🍉">
                 </div>
 
                 <div id="upload-input-wrapper" class="hidden">
-                    <label class="block text-sm font-medium mb-1 mt-2">เลือกรูปจากเครื่อง</label>
-                    <input type="file" id="player-upload" accept="image/*" class="w-full border rounded px-2 py-1">
+                    <label class="block text-sm font-bold text-gray-700 mb-2">เลือกรูปจากเครื่อง</label>
+                    <div class="relative w-full">
+                        <input type="file" id="player-upload" accept="image/*" class="w-full border-2 border-dashed border-gray-300 rounded-xl px-4 py-6 bg-gray-50 text-gray-500 font-medium cursor-pointer hover:bg-orange-50 hover:border-orange-400 transition-all focus:outline-none">
+                    </div>
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium mb-1">เลือกสีขอบรูป</label>
-                    <input type="color" id="player-border" value="#f97316">
+                    <label class="block text-sm font-bold text-gray-700 mb-2">เลือกสีขอบรูป</label>
+                    <div class="flex items-center gap-3">
+                        <input type="color" id="player-border" value="#f97316" class="w-14 h-14 rounded-full border-none cursor-pointer p-0 bg-transparent overflow-hidden shadow-inner">
+                        <span class="text-gray-500 font-medium text-sm">เลือกสีแทนตัวผู้เล่น เพื่อให้โดดเด่นบนกระดาน</span>
+                    </div>
                 </div>
-                <div class="flex justify-end gap-2">
+
+                <hr class="border-gray-100 my-1">
+
+                <div class="flex justify-end gap-3 mt-1">
                     <button type="button" id="close-modal"
-                        class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded">ยกเลิก</button>
+                        class="bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold px-6 py-3 rounded-xl transition-all">ยกเลิก</button>
                     <button type="submit"
-                        class="bg-orange-500 hover:bg-orange-600 text-white rounded px-4 py-2 font-bold">ยืนยัน</button>
+                        class="bg-gradient-to-r from-orange-500 to-orange-400 hover:from-orange-600 hover:to-orange-500 text-white font-black px-8 py-3 rounded-xl shadow-[0_4px_15px_rgba(249,115,22,0.4)] hover:shadow-[0_6px_20px_rgba(249,115,22,0.6)] hover:-translate-y-0.5 transition-all">ยืนยัน</button>
                 </div>
             </form>
         </div>
     </div>
 
     <!-- Modal เพิ่มสินค้า -->
-    <div id="item-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-        <div class="bg-white rounded-xl shadow-xl p-6 w-full max-w-lg space-y-4">
-            <h3 class="text-xl font-bold text-center text-orange-600">เพิ่มสินค้า</h3>
-            <form id="item-form" class="flex flex-col gap-4" onsubmit="event.preventDefault(); saveItem();">
+    <div id="item-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 hidden transition-opacity">
+        <div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-[500px] relative overflow-hidden border-t-8 border-yellow-400 transform transition-transform">
+            <div class="flex items-center gap-4 mb-6">
+                <div class="w-14 h-14 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-500 text-3xl shadow-inner">
+                    <i class="fas fa-box-open"></i>
+                </div>
                 <div>
-                    <label class="block text-sm font-medium mb-1">เลือกประเภทไอคอน</label>
-                    <div class="flex gap-3">
-                        <label class="flex items-center gap-1">
-                            <input type="radio" name="icon-item" value="url" checked onchange="toggleItemIconType()">
+                    <h2 class="text-2xl font-black text-gray-800 tracking-wide">เพิ่มสินค้า</h2>
+                    <p class="text-sm text-gray-500 mt-1">กำหนดไอคอนและรายละเอียดไอเทมในร้านค้า</p>
+                </div>
+            </div>
+
+            <form id="item-form" class="flex flex-col gap-5" onsubmit="event.preventDefault(); saveItem();">
+                <div class="bg-gray-50 p-4 rounded-2xl border-2 border-gray-100">
+                    <label class="block text-sm font-bold text-gray-700 mb-3">เลือกประเภทไอคอน</label>
+                    <div class="flex flex-wrap gap-4">
+                        <label class="flex items-center gap-2 cursor-pointer font-medium text-gray-700 hover:text-yellow-600 transition-colors">
+                            <input type="radio" name="icon-item" value="url" checked onchange="toggleItemIconType()" class="w-5 h-5 accent-yellow-500 cursor-pointer">
                             URL รูปภาพ
                         </label>
-                        <label class="flex items-center gap-1">
-                            <input type="radio" name="icon-item" value="text" onchange="toggleItemIconType()">
+                        <label class="flex items-center gap-2 cursor-pointer font-medium text-gray-700 hover:text-yellow-600 transition-colors">
+                            <input type="radio" name="icon-item" value="text" onchange="toggleItemIconType()" class="w-5 h-5 accent-yellow-500 cursor-pointer">
                             อิโมจิ / ข้อความ
                         </label>
-                        <label class="flex items-center gap-1">
-                            <input type="radio" name="icon-item" value="upload" onchange="toggleItemIconType()">
-                            อัปโหลดไฟล์
+                        <label class="flex items-center gap-2 cursor-pointer font-medium text-gray-700 hover:text-yellow-600 transition-colors">
+                            <input type="radio" name="icon-item" value="upload" onchange="toggleItemIconType()" class="w-5 h-5 accent-yellow-500 cursor-pointer">
+                            อัปโหลดรูป
                         </label>
                     </div>
                 </div>
 
                 <div id="item-image-url">
-                    <label class="block text-sm font-medium mb-1 mt-2">ลิงก์รูปภาพสินค้า</label>
-                    <input type="url" id="item-img" class="w-full border rounded px-2 py-1" placeholder="https://...">
+                    <label class="block text-sm font-bold text-gray-700 mb-2">ลิงก์รูปภาพสินค้า</label>
+                    <input type="url" id="item-img" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-yellow-400 focus:ring-4 focus:ring-yellow-100 placeholder-gray-400 font-medium transition-all" placeholder="https://example.com/item.png">
                 </div>
 
                 <div id="item-emoji" class="hidden">
-                    <label class="block text-sm font-medium mb-1 mt-2">อิโมจิ หรือ ข้อความ</label>
-                    <input type="text" id="item-text" maxlength="3" class="w-full border rounded px-2 py-1"
-                        placeholder="🍉 หรือ A">
+                    <label class="block text-sm font-bold text-gray-700 mb-2">อิโมจิ หรือ ข้อความ</label>
+                    <input type="text" id="item-text" maxlength="3" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-yellow-400 focus:ring-4 focus:ring-yellow-100 placeholder-gray-400 font-medium text-center text-xl transition-all"
+                        placeholder="🍎">
                 </div>
 
                 <div id="item-image-upload" class="hidden">
-                    <label class="block text-sm font-medium mb-1 mt-2">เลือกรูปจากเครื่อง</label>
-                    <input type="file" id="item-upload" accept="image/*" class="w-full border rounded px-2 py-1">
+                    <label class="block text-sm font-bold text-gray-700 mb-2">เลือกรูปจากเครื่อง</label>
+                    <div class="relative w-full">
+                        <input type="file" id="item-upload" accept="image/*" class="w-full border-2 border-dashed border-gray-300 rounded-xl px-4 py-6 bg-gray-50 text-gray-500 font-medium cursor-pointer hover:bg-yellow-50 hover:border-yellow-400 transition-all focus:outline-none">
+                    </div>
                 </div>
 
                 <div>
-                    <label class="block font-medium">รายละเอียดสินค้า</label>
-                    <textarea id="item-description" class="border rounded p-2 w-full" rows="3"
-                        placeholder="พิมพ์รายละเอียดสินค้า..."></textarea>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">รายละเอียดสินค้า</label>
+                    <textarea id="item-description" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-yellow-400 focus:ring-4 focus:ring-yellow-100 placeholder-gray-400 font-medium transition-all resize-none" rows="3"
+                        placeholder="พิมพ์คุณสมบัติหรือคำอธิบายไอเทม..."></textarea>
                 </div>
 
-                <div class="flex justify-end gap-2">
+                <hr class="border-gray-100 my-1">
+
+                <div class="flex justify-end gap-3 mt-1">
                     <button type="button" onclick="closeItemModal()"
-                        class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded">ยกเลิก</button>
+                        class="bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold px-6 py-3 rounded-xl transition-all">ยกเลิก</button>
                     <button type="submit"
-                        class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded">บันทึก</button>
+                        class="bg-gradient-to-r from-yellow-400 to-orange-400 hover:from-yellow-500 hover:to-orange-500 text-white font-black px-8 py-3 rounded-xl shadow-[0_4px_15px_rgba(250,204,21,0.4)] hover:shadow-[0_6px_20px_rgba(250,204,21,0.6)] hover:-translate-y-0.5 transition-all">บันทึกสินค้า</button>
                 </div>
             </form>
         </div>

@@ -37,14 +37,14 @@ function updateCharacterSpace() {
         const goldCount = card.querySelector('.gold-count');
         const orangeCount = card.querySelector('.orange-count');
 
-        // อัปเดตรูปและขอบ
+        // อัปเดตรูปและสไตล์สีประจำตัว (ผ่าน CSS Variable)
         if (playerData) {
             img.src = playerData.src;
-            img.style.borderColor = playerData.border;
+            card.style.setProperty('--player-color', playerData.border);
             img.style.opacity = '1';
         } else {
             img.src = '';
-            img.style.borderColor = '#f97316';
+            card.style.setProperty('--player-color', '#f97316');
             img.style.opacity = '0.3';
         }
 

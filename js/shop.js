@@ -113,6 +113,25 @@ function bindItemContextMenu(cell, index, description) {
             <button class="block w-full text-left px-2 py-1 hover:bg-gray-100 text-rose-600">ลบไอเทม</button>
         `;
 
+        // ฟังก์ชันช่วยเหลือในการลบไอเทมออกจากโค้ดและคืนค่าช่อง
+        function removeCellAndRestoreSlot(itemCell) {
+            const parent = itemCell.parentElement;
+            
+            if (itemCell.classList.contains('destroy-immediately')) {
+                itemCell.remove();
+            } else {
+                // ถ้าไม่ใช่ destroy-immediately ให้แค่ลบข้อมูล (สำหรับช่องในร้านค้า)
+                itemCell.innerHTML = "+";
+                itemCell.removeAttribute("data-description");
+                itemCell.classList.remove('disabled');
+            }
+            
+            // ถ้าไอเทมอยู่ในช่องเก็บของตอนลบ ให้แสดงปุ่ม + คืนมา
+            if (parent && parent.classList && parent.classList.contains('inventory-slot')) {
+                parent.innerHTML = '<i class="fas fa-plus"></i>';
+            }
+        }
+
         // คัดลอกรายละเอียด
         menu.children[0].onclick = () => {
             navigator.clipboard.writeText(description || "")
@@ -137,15 +156,8 @@ function bindItemContextMenu(cell, index, description) {
             makeItemDraggable(newItem);
             document.getElementById("game-board-space").appendChild(newItem);
 
-            // ลบจากร้านค้า
-            if (cell.classList.contains('destroy-immediately')) {
-                cell.remove();
-            } else {
-                // ถ้าไม่ใช่ destroy-immediately ให้แค่ลบข้อมูล
-                cell.innerHTML = "+";
-                cell.removeAttribute("data-description");
-                cell.classList.remove('disabled');
-            }
+            // ลบจากร้านค้าหรือช่อง
+            removeCellAndRestoreSlot(cell);
             menu.remove();
         };
 
@@ -165,28 +177,14 @@ function bindItemContextMenu(cell, index, description) {
             makeItemDraggable(newItem);
             document.getElementById("character-space").appendChild(newItem);
 
-            // ลบจากร้านค้า
-            if (cell.classList.contains('destroy-immediately')) {
-                cell.remove();
-            } else {
-                // ถ้าไม่ใช่ destroy-immediately ให้แค่ลบข้อมูล
-                cell.innerHTML = "+";
-                cell.removeAttribute("data-description");
-                cell.classList.remove('disabled');
-            }
+            // ลบจากร้านค้าหรือช่อง
+            removeCellAndRestoreSlot(cell);
             menu.remove();
         };
 
         // ลบไอเทม
         menu.children[3].onclick = () => {
-            if (cell.classList.contains('destroy-immediately')) {
-                cell.remove();
-            } else {
-                // ถ้าไม่ใช่ destroy-immediately ให้แค่ลบข้อมูล
-                cell.innerHTML = "+";
-                cell.removeAttribute("data-description");
-                cell.classList.remove('disabled');
-            }
+            removeCellAndRestoreSlot(cell);
             menu.remove();
         };
 
@@ -203,15 +201,38 @@ function bindItemContextMenu(cell, index, description) {
 }
 
 function makeItemDraggable(item) {
-    item.style.position = "absolute";
     item.style.cursor = "grab";
     item.draggable = false;
 
     item.onmousedown = (e) => {
+        // ป้องกันลากเว้นแต่จะคลิกเมาส์ซ้าย
+        if (e.button !== 0) return;
+        
         e.preventDefault();
+        const itemRect = item.getBoundingClientRect();
+        
+        // ถ้าถูกดึงออกมาจากช่องเก็บของ ให้เอา + กลับมาแล้วย้ายไปอยู่ใน character-space หรือ document.body
+        const slot = item.parentElement;
+        if (slot && slot.classList.contains('inventory-slot')) {
+            slot.innerHTML = '<i class="fas fa-plus"></i>';
+            document.getElementById("character-space").appendChild(item);
+        }
 
-        const shiftX = e.clientX - item.getBoundingClientRect().left;
-        const shiftY = e.clientY - item.getBoundingClientRect().top;
+        // คืนขนาดรูปภาพและปรับเป็น Absolute คืน
+        item.style.position = "absolute";
+        item.classList.add('absolute', 'z-50');
+        item.classList.remove('w-full', 'h-full');
+        
+        const img = item.querySelector('img');
+        if (img) {
+            img.className = `w-${cellSize} h-${cellSize} object-cover rounded`;
+            item.className = `absolute z-50 w-${cellSize} h-${cellSize} disabled destroy-immediately`;
+        }
+
+        const shiftX = e.clientX - itemRect.left;
+        const shiftY = e.clientY - itemRect.top;
+
+        moveAt(e.pageX, e.pageY);
 
         function moveAt(pageX, pageY) {
             item.style.left = pageX - shiftX + 'px';
@@ -222,12 +243,39 @@ function makeItemDraggable(item) {
             moveAt(event.pageX, event.pageY);
         }
 
-        document.addEventListener('mousemove', onMouseMove);
-
-        item.onmouseup = () => {
+        function onMouseUp(ev) {
             document.removeEventListener('mousemove', onMouseMove);
-            item.onmouseup = null;
-        };
+            document.removeEventListener('mouseup', onMouseUp);
+
+            // ตรวจหา container ที่ผู้ใช้เอาไปวาง (โดยซ่อนตัวมันเองชั่วคราว)
+            item.hidden = true;
+            let elemBelow = document.elementFromPoint(ev.clientX, ev.clientY);
+            item.hidden = false;
+
+            if (elemBelow) {
+                let dropZone = elemBelow.closest('.inventory-slot');
+                if (dropZone && !dropZone.querySelector('img')) {
+                    // หากช่องเก็บของนั้นว่าง (ไม่มีรูปข้างใน) ก็จับใส่ได้เลย
+                    dropZone.innerHTML = '';
+                    
+                    item.style.position = 'relative';
+                    item.style.left = 'auto';
+                    item.style.top = 'auto';
+                    item.style.zIndex = 'auto';
+                    item.classList.remove('absolute', 'z-50', `w-${cellSize}`, `h-${cellSize}`);
+                    item.classList.add('w-full', 'h-full');
+                    
+                    if (img) {
+                        img.className = 'w-full h-full object-cover rounded-xl';
+                    }
+                    
+                    dropZone.appendChild(item);
+                }
+            }
+        }
+
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);
     };
 
     item.ondragstart = () => false;
