@@ -90,6 +90,20 @@
         <!-- ขยับเนื้อหาทั้งหมดลงมาให้ไม่ทับ Navbar -->
         <div class="pt-16"></div>
 
+        <!-- Timer สำหรับสุ่มส้ม (ซ้ายล่าง) -->
+        <div class="fixed bottom-8 left-8 z-30 bg-white/90 backdrop-blur shadow-[0_8px_30px_rgba(249,115,22,0.15)] rounded-2xl p-4 border border-orange-100 flex flex-col items-center gap-2 transform transition-transform hover:scale-105">
+            <span class="text-[10px] font-black text-orange-500 uppercase tracking-widest flex items-center gap-1"><i class="fas fa-clock"></i> Orange Timer</span>
+            <div id="orange-timer-display" class="text-3xl font-black text-gray-800 font-mono tracking-tighter leading-none">05:00</div>
+            <div class="flex gap-2 w-full mt-2">
+                <button onclick="startOrangeTimer()" class="flex-1 bg-gradient-to-t from-green-500 to-green-400 hover:from-green-600 hover:to-green-500 text-white font-bold h-10 rounded-xl shadow-md transition-all active:scale-95 flex items-center justify-center" title="เริ่มนับเวลา">
+                    <i class="fas fa-play"></i>
+                </button>
+                <button onclick="stopOrangeTimer()" class="flex-1 bg-gradient-to-t from-red-500 to-red-400 hover:from-red-600 hover:to-red-500 text-white font-bold h-10 rounded-xl shadow-md transition-all active:scale-95 flex items-center justify-center" title="หยุดเวลา">
+                    <i class="fas fa-pause"></i>
+                </button>
+            </div>
+        </div>
+
         <svg id="special-lines" class="absolute top-0 left-0 w-full h-full pointer-events-none z-0"
             style="overflow: visible;"></svg>
 

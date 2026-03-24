@@ -713,3 +713,48 @@ function bindOrangeContextMenu(orange) {
         document.body.appendChild(menu);
     });
 }
+
+// -------------------------------------------------------------
+// ระบบ นับเวลาถอยหลัง 5 นาที เพื่อเกิดส้มอัตโนมัติ
+// -------------------------------------------------------------
+let orangeTimerInterval = null;
+let orangeTimeRemaining = 5 * 60; // 5 นาที (300 วินาที)
+
+function startOrangeTimer() {
+    if (orangeTimerInterval) return; // กำลังทำงานอยู่แล้ว
+    
+    showToast("เริ่มนับเวลาเกิดส้ม 5 นาที");
+    
+    orangeTimerInterval = setInterval(() => {
+        orangeTimeRemaining--;
+        updateOrangeTimerDisplay();
+        
+        if (orangeTimeRemaining <= 0) {
+            // ครบเวลาแล้ว เกิดส้ม
+            createOrange();
+            showToast("ส้มเกิดแล้ว! เริ่มนับเวลาใหม่");
+            
+            // รีเซ็ตเวลา
+            orangeTimeRemaining = 5 * 60;
+            updateOrangeTimerDisplay();
+        }
+    }, 1000);
+}
+
+function stopOrangeTimer() {
+    if (orangeTimerInterval) {
+        clearInterval(orangeTimerInterval);
+        orangeTimerInterval = null;
+        showToast("หยุดนับเวลาเกิดส้มแล้ว");
+    }
+}
+
+function updateOrangeTimerDisplay() {
+    const minutes = Math.floor(orangeTimeRemaining / 60);
+    const seconds = orangeTimeRemaining % 60;
+    const display = document.getElementById('orange-timer-display');
+    if (display) {
+        display.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+}
+
