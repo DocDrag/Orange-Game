@@ -143,13 +143,19 @@ function bindItemContextMenu(cell, index, description) {
         // ย้ายไปยังบอร์ด
         menu.children[1].onclick = () => {
             const newItem = cell.cloneNode(true);
+            // ล้าง style ที่อาจติดมาจากช่องเก็บของ
+            newItem.style.position = "absolute";
+            newItem.style.zIndex = "30";
+            
             newItem.className = `absolute z-30 w-${cellSize / 2} h-${cellSize / 2} disabled destroy-immediately`;
             newItem.style.top = "100px";
             newItem.style.left = "100px";
-            // ปรับขนาดให้เล็กลง
+            
+            // บังคับเปลี่ยนคลาสรูปภาพป้องกัน w-full 
             const imageElement = newItem.querySelector('img');
-            imageElement.classList.replace(`w-${cellSize}`, `w-${cellSize / 2}`);
-            imageElement.classList.replace(`h-${cellSize}`, `h-${cellSize / 2}`);
+            if (imageElement) {
+                imageElement.className = `w-${cellSize / 2} h-${cellSize / 2} object-cover rounded`;
+            }
 
             const description = cell.dataset.description || "";
             bindItemContextMenu(newItem, index, description);
@@ -164,13 +170,19 @@ function bindItemContextMenu(cell, index, description) {
         // ย้ายไปยังหน้าตัวละคร
         menu.children[2].onclick = () => {
             const newItem = cell.cloneNode(true);
+            // ล้าง style ที่อาจติดมาจากช่องเก็บของ
+            newItem.style.position = "absolute";
+            newItem.style.zIndex = "30";
+            
             newItem.className = `absolute z-30 w-${cellSize} h-${cellSize} disabled destroy-immediately`;
             newItem.style.top = "100px";
             newItem.style.left = "100px";
-            // ปรับขนาดให้ปกติ
+            
+            // บังคับเปลี่ยนคลาสรูปภาพป้องกัน w-full 
             const imageElement = newItem.querySelector('img');
-            imageElement.classList.replace(`w-${cellSize / 2}`, `w-${cellSize}`);
-            imageElement.classList.replace(`h-${cellSize / 2}`, `h-${cellSize}`);
+            if (imageElement) {
+                imageElement.className = `w-${cellSize} h-${cellSize} object-cover rounded`;
+            }
 
             const description = cell.dataset.description || "";
             bindItemContextMenu(newItem, index, description);
@@ -216,18 +228,19 @@ function makeItemDraggable(item) {
         if (slot && slot.classList.contains('inventory-slot')) {
             slot.innerHTML = '<i class="fas fa-plus"></i>';
             document.getElementById("character-space").appendChild(item);
+            
+            // คืนขนาดรูปภาพและปรับเป็น Absolute คืนเฉพาะตอนดึงออกจากช่องเก็บของ
+            item.classList.remove('w-full', 'h-full');
+            const img = item.querySelector('img');
+            if (img) {
+                img.className = `w-${cellSize} h-${cellSize} object-cover rounded`;
+                item.className = `absolute z-50 w-${cellSize} h-${cellSize} disabled destroy-immediately`;
+            }
         }
 
-        // คืนขนาดรูปภาพและปรับเป็น Absolute คืน
+        // ทำให้ลากได้โดยไม่เปลี่ยนขนาดเดิม (ยกเว้นเพิ่งดึงออกจากช่อง)
         item.style.position = "absolute";
         item.classList.add('absolute', 'z-50');
-        item.classList.remove('w-full', 'h-full');
-        
-        const img = item.querySelector('img');
-        if (img) {
-            img.className = `w-${cellSize} h-${cellSize} object-cover rounded`;
-            item.className = `absolute z-50 w-${cellSize} h-${cellSize} disabled destroy-immediately`;
-        }
 
         const shiftX = e.clientX - itemRect.left;
         const shiftY = e.clientY - itemRect.top;
@@ -262,9 +275,12 @@ function makeItemDraggable(item) {
                     item.style.left = 'auto';
                     item.style.top = 'auto';
                     item.style.zIndex = 'auto';
-                    item.classList.remove('absolute', 'z-50', `w-${cellSize}`, `h-${cellSize}`);
+                    
+                    // ถอดคลาสขนาดทั้งหมดออกเพื่อให้เป็น w-full h-full ตามช่องเก็บของ
+                    item.classList.remove('absolute', 'z-50', `w-${cellSize}`, `h-${cellSize}`, `w-${cellSize/2}`, `h-${cellSize/2}`);
                     item.classList.add('w-full', 'h-full');
                     
+                    const img = item.querySelector('img');
                     if (img) {
                         img.className = 'w-full h-full object-cover rounded-xl';
                     }
